@@ -1,5 +1,9 @@
 name: fuzzy
 version: 0.0.1
+
+authors:
+  - Igor Borges <igor@borges.dev>
+
 description: >
   Fuzzy search in Dart.
 homepage: https://github.com/comigor/fuzzy
