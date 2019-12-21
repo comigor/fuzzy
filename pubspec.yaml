@@ -1,5 +1,5 @@
 name: fuzzy
-version: 0.0.1
+version: 0.0.2
 
 authors:
   - Igor Borges <igor@borges.dev>
@@ -12,6 +12,9 @@ issue_tracker: https://github.com/comigor/fuzzy/issues
 
 environment:
   sdk: '>=2.6.0 <3.0.0'
+
+dependencies:
+  latinize: ^0.0.2
 
 dev_dependencies:
   test: ^1.9.4
