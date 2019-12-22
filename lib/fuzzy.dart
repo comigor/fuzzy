@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:fuzzy/bitap/bitap.dart';
 import 'package:fuzzy/bitap/data/bitap_index.dart';
 import 'package:fuzzy/bitap/data/bitap_match_score.dart';
-import 'package:fuzzy/data/advanced_options.dart';
 import 'package:fuzzy/data/fuzzy_options.dart';
 import 'package:fuzzy/data/result.dart';
 
@@ -19,13 +18,10 @@ class Fuse {
   Fuse(
     this.list, {
     FuzzyOptions options,
-    AdvancedOptions advancedOptions,
-  })  : options = options ?? FuzzyOptions(),
-        advancedOptions = advancedOptions ?? AdvancedOptions();
+  }) : options = options ?? FuzzyOptions();
 
   final List<String> list;
   final FuzzyOptions options;
-  final AdvancedOptions advancedOptions;
 
   List<Result> search(String pattern, [int limit = -1]) {
     final searchers = _prepareSearchers(pattern);
@@ -34,7 +30,7 @@ class Fuse {
 
     _computeScore({}, results);
 
-    if (advancedOptions.shouldSort) {
+    if (options.shouldSort) {
       _sort(results);
     }
 
@@ -48,7 +44,7 @@ class Fuse {
   Searchers _prepareSearchers(String pattern) {
     final tokenSearchers = <Bitap>[];
 
-    if (advancedOptions.tokenize) {
+    if (options.tokenize) {
       // Tokenize on the separator
       final tokens = pattern.split(options.tokenSeparator);
       for (var i = 0, len = tokens.length; i < len; i += 1) {
@@ -107,7 +103,7 @@ class Fuse {
     final mainSearchResult = fullSearcher.search(value);
     _log('Full text: "${value}", score: ${mainSearchResult.score}');
 
-    if (advancedOptions.tokenize) {
+    if (options.tokenize) {
       final words = value.split(options.tokenSeparator);
       final scores = <double>[];
 
@@ -130,7 +126,7 @@ class Fuse {
             scores.add(tokenSearchResult.score);
           } else {
             // obj[word] = 1;
-            if (advancedOptions.matchAllTokens) {
+            if (options.matchAllTokens) {
               scores.add(1);
             }
           }
@@ -156,10 +152,9 @@ class Fuse {
 
     _log('Score average (final): $finalScore');
 
-    final checkTextMatches =
-        (advancedOptions.tokenize && advancedOptions.matchAllTokens)
-            ? numTextMatches >= tokenSearchers.length
-            : true;
+    final checkTextMatches = (options.tokenize && options.matchAllTokens)
+        ? numTextMatches >= tokenSearchers.length
+        : true;
 
     _log('\nCheck Matches: ${checkTextMatches}');
 
@@ -237,11 +232,11 @@ class Fuse {
 
   void _sort(List<Result> results) {
     _log('\n\nSorting....');
-    results.sort(advancedOptions.sortFn);
+    results.sort(options.sortFn);
   }
 
   void _log(String log) {
-    if (advancedOptions.verbose) {
+    if (options.verbose) {
       print(log);
     }
   }

@@ -1,4 +1,3 @@
-import 'package:fuzzy/data/advanced_options.dart';
 import 'package:fuzzy/data/fuzzy_options.dart';
 import 'package:fuzzy/fuzzy.dart';
 import 'package:test/test.dart';
@@ -13,8 +12,6 @@ final defaultOptions = FuzzyOptions(
   tokenSeparator: RegExp(r' +'),
   findAllMatches: false,
   minMatchCharLength: 1,
-);
-final defaultAdvancedOptions = AdvancedOptions(
   shouldSort: true,
   sortFn: (a, b) => a.score.compareTo(b.score),
   tokenize: false,
@@ -27,12 +24,10 @@ final defaultAdvancedOptions = AdvancedOptions(
 Fuse setup({
   List<String> itemList,
   FuzzyOptions overwriteOptions,
-  AdvancedOptions overwriteAdvancedOptions,
 }) {
   return Fuse(
     itemList ?? defaultList,
     options: defaultOptions.mergeWith(overwriteOptions),
-    advancedOptions: defaultAdvancedOptions.mergeWith(overwriteAdvancedOptions),
   );
 }
 
@@ -83,12 +78,11 @@ void main() {
   group('Include score in result list: ["Apple", "Orange", "Banana"]', () {
     Fuse fuse;
     setUp(() {
-      fuse =
-          setup(overwriteAdvancedOptions: AdvancedOptions(includeScore: true));
+      fuse = setup(overwriteOptions: FuzzyOptions(includeScore: true));
     });
 
     test('should have the correct configuration', () {
-      expect(fuse.advancedOptions.includeScore, true);
+      expect(fuse.options.includeScore, true);
     });
 
     test('When searching for the term "Apple"', () {
@@ -116,8 +110,7 @@ void main() {
   group('Weighted search', () {
     Fuse fuse;
     setUp(() {
-      fuse =
-          setup(overwriteAdvancedOptions: AdvancedOptions(includeScore: true));
+      fuse = setup(overwriteOptions: FuzzyOptions(includeScore: true));
     });
   }, skip: true);
 
@@ -133,7 +126,7 @@ void main() {
       ];
       fuse = setup(
         itemList: customList,
-        overwriteAdvancedOptions: AdvancedOptions(tokenize: true),
+        overwriteOptions: FuzzyOptions(tokenize: true),
       );
     });
 
@@ -177,7 +170,7 @@ void main() {
       final customList = ['t te tes test tes te t'];
       fuse = setup(
         itemList: customList,
-        overwriteAdvancedOptions: AdvancedOptions(includeMatches: true),
+        overwriteOptions: FuzzyOptions(includeMatches: true),
       );
     });
 
@@ -207,8 +200,10 @@ void main() {
       final customList = ['t te tes test tes te t'];
       fuse = setup(
         itemList: customList,
-        overwriteOptions: FuzzyOptions(findAllMatches: true),
-        overwriteAdvancedOptions: AdvancedOptions(includeMatches: true),
+        overwriteOptions: FuzzyOptions(
+          findAllMatches: true,
+          includeMatches: true,
+        ),
       );
     });
 
@@ -231,8 +226,10 @@ void main() {
       final customList = ['t te tes test tes te t'];
       fuse = setup(
         itemList: customList,
-        overwriteOptions: FuzzyOptions(minMatchCharLength: 2),
-        overwriteAdvancedOptions: AdvancedOptions(includeMatches: true),
+        overwriteOptions: FuzzyOptions(
+          minMatchCharLength: 2,
+          includeMatches: true,
+        ),
       );
     });
 
@@ -278,8 +275,6 @@ void main() {
           distance: 0,
           maxPatternLength: 50,
           minMatchCharLength: 4,
-        ),
-        overwriteAdvancedOptions: AdvancedOptions(
           shouldSort: true,
         ),
       );
