@@ -6,16 +6,15 @@ import 'data/bitap_match_score.dart';
 import 'data/bitap_index.dart';
 
 class Bitap {
-  Bitap(String pattern, {FuzzyOptions options})
-      : this.options = options,
-        pattern = options.isCaseSensitive ? pattern : pattern.toLowerCase() {
+  Bitap(String pattern, {FuzzyOptions options}) : this.options = options {
+    this.pattern = options.isCaseSensitive ? pattern : pattern.toLowerCase();
     if (pattern.length <= options.maxPatternLength) {
-      patternAlphabet = pa.patternAlphabet(pattern);
+      patternAlphabet = pa.patternAlphabet(this.pattern);
     }
   }
 
-  final String pattern;
   final FuzzyOptions options;
+  String pattern;
   Map<String, int> patternAlphabet = {};
 
   MatchScore search(String text) {
@@ -49,4 +48,7 @@ class Bitap {
       minMatchCharLength: options.minMatchCharLength,
     );
   }
+
+  @override
+  String toString() => 'Bitap: $pattern, $patternAlphabet\noptions: $options';
 }

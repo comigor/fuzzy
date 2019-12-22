@@ -8,7 +8,7 @@ double bitapScore(
   final accuracy = errors / pattern.length;
   final proximity = (expectedLocation - currentLocation).abs();
 
-  if (distance != 0) {
+  if (distance == 0.0) {
     // Dodge divide by zero error.
     return proximity != 0 ? 1.0 : accuracy;
   }

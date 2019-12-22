@@ -19,4 +19,15 @@ class FuzzyOptions {
   final Pattern tokenSeparator;
   final bool findAllMatches;
   final int minMatchCharLength;
+
+  FuzzyOptions mergeWith(FuzzyOptions options) => FuzzyOptions(
+        location: options?.location ?? location,
+        distance: options?.distance ?? distance,
+        threshold: options?.threshold ?? threshold,
+        maxPatternLength: options?.maxPatternLength ?? maxPatternLength,
+        isCaseSensitive: options?.isCaseSensitive ?? isCaseSensitive,
+        tokenSeparator: options?.tokenSeparator ?? tokenSeparator,
+        findAllMatches: options?.findAllMatches ?? findAllMatches,
+        minMatchCharLength: options?.minMatchCharLength ?? minMatchCharLength,
+      );
 }

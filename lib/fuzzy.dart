@@ -205,37 +205,7 @@ class Fuse {
     return results;
   }
 
-//   List<MatchScore> _computeScore (List<double> weights, List<MatchScore> results) {
-// _log('\n\nComputing score:\n');
-
-//     for (var i = 0, len = results.length; i < len; i += 1) {
-//       final output = results[i].output;
-//       final scoreLen = output.length;
-
-//       var currScore = 1;
-//       var bestScore = 1;
-
-//       for (final j = 0; j < scoreLen; j += 1) {
-//         final weight = weights ? weights[output[j].key].weight : 1
-//         final score = weight === 1 ? output[j].score : (output[j].score || 0.001)
-//         final nScore = score * weight
-
-//         if (weight !== 1) {
-//           bestScore = Math.min(bestScore, nScore)
-//         } else {
-//           output[j].nScore = nScore
-//           currScore *= nScore
-//         }
-//       }
-
-//       results[i].score = bestScore === 1 ? currScore : bestScore
-
-// _log(results[i]);
-//     }
-//   }
-
-  List<Result> _computeScore(
-      Map<String, double> weights, List<Result> results) {
+  void _computeScore(Map<String, double> weights, List<Result> results) {
     _log('\n\nComputing score:\n');
 
     for (var i = 0, len = results.length; i < len; i += 1) {

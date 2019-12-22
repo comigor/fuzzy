@@ -99,14 +99,16 @@ MatchScore bitapSearch(
 
     for (var j = finish; j >= start; j -= 1) {
       final currentLocation = j - 1;
-      final charMatch = patternAlphabet[text[currentLocation]] ?? 0;
+      final currentChar =
+          currentLocation >= text.length ? '' : text[currentLocation];
+      final charMatch = patternAlphabet[currentChar];
 
-      if (charMatch != null) {
+      if (charMatch != null && currentLocation < textLen) {
         matchMask[currentLocation] = 1;
       }
 
       // First pass: exact match
-      bitArr[j] = ((bitArr[j + 1] << 1) | 1) & charMatch;
+      bitArr[j] = ((bitArr[j + 1] << 1) | 1) & (charMatch ?? 0);
 
       // Subsequent passes: fuzzy match
       if (i != 0) {

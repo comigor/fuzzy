@@ -22,4 +22,14 @@ class AdvancedOptions {
   final bool includeMatches;
   final bool includeScore;
   final bool verbose;
+
+  AdvancedOptions mergeWith(AdvancedOptions options) => AdvancedOptions(
+        shouldSort: options?.shouldSort ?? shouldSort,
+        sortFn: options?.sortFn ?? sortFn,
+        tokenize: options?.tokenize ?? tokenize,
+        matchAllTokens: options?.matchAllTokens ?? matchAllTokens,
+        includeMatches: options?.includeMatches ?? includeMatches,
+        includeScore: options?.includeScore ?? includeScore,
+        verbose: options?.verbose ?? verbose,
+      );
 }
