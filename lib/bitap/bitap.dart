@@ -5,19 +5,34 @@ import 'bitap_regex_search.dart';
 import 'data/bitap_match_score.dart';
 import 'data/bitap_index.dart';
 
+/// The bitap algorithm (also known as the shift-or, shift-and or
+/// Baeza-Yates–Gonnet algorithm) is an approximate string matching algorithm.
+/// The algorithm tells whether a given text contains a substring which is
+/// "approximately equal" to a given pattern, where approximate equality is
+/// defined in terms of Levenshtein distance – if the substring and pattern are
+/// within a given distance k of each other, then the algorithm considers them
+/// equal. The algorithm begins by precomputing a set of bitmasks containing
+/// one bit for each element of the pattern. Then it is able to do most of the
+/// work with bitwise operations, which are extremely fast.
 class Bitap {
-  Bitap(String pattern, {FuzzyOptions options}) : this.options = options {
+  /// Instantiates a bitap, given options
+  Bitap(String pattern, {FuzzyOptions options}) : options = options {
     this.pattern = options.isCaseSensitive ? pattern : pattern.toLowerCase();
     if (pattern.length <= options.maxPatternLength) {
       patternAlphabet = pa.patternAlphabet(this.pattern);
     }
   }
 
-  /// Configuration options.
+  /// Configuration options
   final FuzzyOptions options;
+
+  /// The pattern to search for
   String pattern;
+
+  /// The laphabet derived from the pattern
   Map<String, int> patternAlphabet = {};
 
+  /// Executes a search, given a search string
   MatchScore search(String text) {
     if (!options.isCaseSensitive) {
       text = text.toLowerCase();

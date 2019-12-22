@@ -1,3 +1,4 @@
+/// Calculates a score to a given bitap pattern
 double bitapScore(
   String pattern, {
   int errors = 0,

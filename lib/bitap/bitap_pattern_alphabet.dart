@@ -1,3 +1,4 @@
+/// Make a pattern alphabet for a given pattern
 Map<String, int> patternAlphabet(String pattern) {
   final mask = <String, int>{};
   final len = pattern.length;

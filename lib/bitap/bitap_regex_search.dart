@@ -1,8 +1,11 @@
 import 'data/bitap_index.dart';
 import 'data/bitap_match_score.dart';
 
-final SPECIAL_CHARS_REGEX = RegExp(r'\[-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]');
+/// Pattern to exclude special characters
+final Pattern SPECIAL_CHARS_REGEX =
+    RegExp(r'\[-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]');
 
+/// Execute a bitap regex search
 MatchScore bitapRegexSearch(
     String text, String pattern, Pattern tokenSeparator) {
   tokenSeparator ??= RegExp(r' +');

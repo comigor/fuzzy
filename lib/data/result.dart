@@ -1,13 +1,18 @@
 import '../bitap/bitap.dart';
 import '../bitap/data/bitap_index.dart';
 
+/// Class to hold searchers
 class Searchers {
+  /// Instantiates it
   Searchers({
     this.tokenSearchers,
     this.fullSearcher,
   });
 
+  /// All searchers, if tokenized
   final List<Bitap> tokenSearchers;
+
+  /// The whole string searcher
   final Bitap fullSearcher;
 
   @override
@@ -15,22 +20,31 @@ class Searchers {
       'tokenSearchers: $tokenSearchers, fullSearcher: $fullSearcher';
 }
 
+/// Holds the result (with score and index)
 class Result {
+  /// Instantiates it
   Result({
     this.item,
     this.output,
-    this.score,
+    this.score = 0,
   });
 
+  /// Index of result in the original list
   final int item;
+
+  /// Details of this result
   final List<ResultDetails> output;
+
+  /// Score of this result
   double score;
 
   @override
   String toString() => 'item: $item, score: $score, output: $output';
 }
 
+/// Details of a result.
 class ResultDetails {
+  /// Instantiates it
   ResultDetails({
     this.key,
     this.arrayIndex,
@@ -40,11 +54,22 @@ class ResultDetails {
     this.nScore,
   });
 
+  /// Key (not used, I think)
   final String key;
+
+  /// Index of result in the original list
   final int arrayIndex;
+
+  /// Original value
   final String value;
+
+  /// Score of this result
   final double score;
+
+  /// nScore of this result (?)
   double nScore;
+
+  /// Indexes of matched patterns on the value
   final List<MatchIndex> matchedIndices;
 
   @override

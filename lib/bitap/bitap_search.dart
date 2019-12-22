@@ -4,6 +4,7 @@ import 'data/bitap_match_score.dart';
 import 'bitap_matched_indices.dart';
 import 'bitap_score.dart';
 
+/// Executes a bitap search
 MatchScore bitapSearch(
   String text,
   String pattern,

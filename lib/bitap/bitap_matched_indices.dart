@@ -1,5 +1,6 @@
 import 'data/bitap_index.dart';
 
+/// Retrieve all matched indexes given a mask and minimum length
 List<MatchIndex> matchedIndices(List<int> matchmask, int minMatchCharLength) {
   matchmask ??= [];
   minMatchCharLength ??= 1;
@@ -22,7 +23,6 @@ List<MatchIndex> matchedIndices(List<int> matchmask, int minMatchCharLength) {
     }
   }
 
-  // (i-1 - start) + 1 => i - start
   if (matchmask[i - 1] != 0 && (i - start) >= minMatchCharLength) {
     matchedIndices.add(MatchIndex(start, i - 1));
   }

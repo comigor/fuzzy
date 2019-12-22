@@ -1,23 +1,46 @@
 import 'package:fuzzy/fuzzy.dart';
 
 void main() {
+  final bookList = [
+    'Old Man\'s War',
+    'The Lock Artist',
+    'HTML5',
+    'Right Ho Jeeves',
+    'The Code of the Wooster',
+    'Thank You Jeeves',
+    'The DaVinci Code',
+    'Angels & Demons',
+    'The Silmarillion',
+    'Syrup',
+    'The Lost Symbol',
+    'The Book of Lies',
+    'Lamb',
+    'Fool',
+    'Incompetence',
+    'Fat',
+    'Colony',
+    'Backwards, Red Dwarf',
+    'The Grand Design',
+    'The Book of Samson',
+    'The Preservationist',
+    'Fallen',
+    'Monster 1959',
+  ];
   final fuse = Fuzzy(
-    [
-      'igor da silva borges',
-      'igor borges',
-      'ivo borges',
-      'roger borges',
-      'roger silva',
-    ],
+    bookList,
     options: FuzzyOptions(
-      minMatchCharLength: 3,
       findAllMatches: true,
       tokenize: true,
+      threshold: 0.5,
     ),
   );
 
-  print(fuse.search('igor').map((r) {
-    final outs = r.output.map((o) => o.value).toList();
-    return '${r.score} $outs';
-  }).toList());
+  final result = fuse.search('book');
+
+  print(
+      'A score of 0 indicates a perfect match, while a score of 1 indicates a complete mismatch.');
+
+  result.forEach((r) {
+    print('\nScore: ${r.score}\nTitle: ${bookList[r.item]}');
+  });
 }

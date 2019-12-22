@@ -4,7 +4,9 @@ typedef SorterFn = int Function(Result a, Result b);
 
 int _defaultSortFn(Result a, Result b) => a.score.compareTo(b.score);
 
+/// Options for performing a fuzzy search
 class FuzzyOptions {
+  /// Instantiate an options object
   FuzzyOptions({
     this.location = 0,
     this.distance = 100,
@@ -71,6 +73,7 @@ class FuzzyOptions {
   /// Will print to the console. Useful for debugging.
   final bool verbose;
 
+  /// Merge two options instances. Useful for overriding just some options.
   FuzzyOptions mergeWith(FuzzyOptions options) => FuzzyOptions(
         location: options?.location ?? location,
         distance: options?.distance ?? distance,

@@ -13,16 +13,20 @@ export 'data/fuzzy_options.dart';
 /// ```
 /// import 'package:fuzzy/fuzzy.dart';
 /// ```
-
 class Fuzzy {
+  /// Instantiates it given a list of strings to look into, and options
   Fuzzy(
     this.list, {
     FuzzyOptions options,
   }) : options = options ?? FuzzyOptions();
 
+  /// The original list of string
   final List<String> list;
+
+  /// Fuzz search Options
   final FuzzyOptions options;
 
+  /// Search for a given [pattern] on the [list], optionally [limit]ing the result length
   List<Result> search(String pattern, [int limit = -1]) {
     final searchers = _prepareSearchers(pattern);
 
