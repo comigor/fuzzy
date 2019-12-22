@@ -257,4 +257,63 @@ void main() {
           reason: 'We get a result with no matches');
     });
   });
+
+  group('Sorted search results', () {
+    Fuse fuse;
+  }, skip: true);
+
+  group('Searching using string large strings', () {
+    Fuse fuse;
+    setUp(() {
+      final customList = [
+        'pizza',
+        'feast',
+        'super+large+much+unique+36+very+wow+',
+      ];
+      fuse = setup(
+        itemList: customList,
+        overwriteOptions: FuzzyOptions(
+          threshold: 0.5,
+          location: 0,
+          distance: 0,
+          maxPatternLength: 50,
+          minMatchCharLength: 4,
+        ),
+        overwriteAdvancedOptions: AdvancedOptions(
+          shouldSort: true,
+        ),
+      );
+    });
+
+    test('finds delicious pizza', () {
+      final result = fuse.search('pizza');
+      expect(result[0].output[0].value, equals('pizza'));
+    });
+
+    test('finds pizza when clumbsy', () {
+      final result = fuse.search('pizze');
+      expect(result[0].output[0].value, equals('pizza'));
+    });
+
+    test('finds no matches when string is exactly 31 characters', () {
+      final result = fuse.search('this-string-is-exactly-31-chars');
+      expect(result.isEmpty, isTrue);
+    });
+
+    test('finds no matches when string is exactly 32 characters', () {
+      final result = fuse.search('this-string-is-exactly-32-chars-');
+      expect(result.isEmpty, isTrue);
+    });
+
+    test('finds no matches when string is larger than 32 characters', () {
+      final result = fuse.search('this-string-is-more-than-32-chars');
+      expect(result.isEmpty, isTrue);
+    });
+
+    test('should find one match that is larger than 32 characters', () {
+      final result = fuse.search('super+large+much+unique+36+very+wow+');
+      expect(result[0].output[0].value,
+          equals('super+large+much+unique+36+very+wow+'));
+    });
+  });
 }
