@@ -170,4 +170,91 @@ void main() {
               'represent the indice of "Workforce Superannuation Corporate"');
     });
   });
+
+  group('Searching with default options', () {
+    Fuse fuse;
+    setUp(() {
+      final customList = ['t te tes test tes te t'];
+      fuse = setup(
+        itemList: customList,
+        overwriteAdvancedOptions: AdvancedOptions(includeMatches: true),
+      );
+    });
+
+    test('When searching for the term "test"', () {
+      final result = fuse.search('test');
+
+      expect(result[0].output[0].matchedIndices.length, equals(4),
+          reason: 'We get a match containing 4 indices');
+
+      expect(result[0].output[0].matchedIndices[0].start, equals(0),
+          reason: 'and the first index is a single character');
+      expect(result[0].output[0].matchedIndices[0].end, equals(0),
+          reason: 'and the first index is a single character');
+    });
+
+    test(
+        'When the seach pattern is longer than maxPatternLength and contains RegExp special characters',
+        () {
+      final result = fuse.search(
+          r'searching with a sufficiently long string sprinkled with ([ )] *+^$ etc.');
+    }, skip: true);
+  });
+
+  group('Searching with findAllMatches', () {
+    Fuse fuse;
+    setUp(() {
+      final customList = ['t te tes test tes te t'];
+      fuse = setup(
+        itemList: customList,
+        overwriteOptions: FuzzyOptions(findAllMatches: true),
+        overwriteAdvancedOptions: AdvancedOptions(includeMatches: true),
+      );
+    });
+
+    test('When searching for the term "test"', () {
+      final result = fuse.search('test');
+
+      expect(result[0].output[0].matchedIndices.length, equals(7),
+          reason: 'We get a match containing 7 indices');
+
+      expect(result[0].output[0].matchedIndices[0].start, equals(0),
+          reason: 'and the first index is a single character');
+      expect(result[0].output[0].matchedIndices[0].end, equals(0),
+          reason: 'and the first index is a single character');
+    });
+  });
+
+  group('Searching with minCharLength', () {
+    Fuse fuse;
+    setUp(() {
+      final customList = ['t te tes test tes te t'];
+      fuse = setup(
+        itemList: customList,
+        overwriteOptions: FuzzyOptions(minMatchCharLength: 2),
+        overwriteAdvancedOptions: AdvancedOptions(includeMatches: true),
+      );
+    });
+
+    test('When searching for the term "test"', () {
+      final result = fuse.search('test');
+
+      expect(result[0].output[0].matchedIndices.length, equals(3),
+          reason: 'We get a match containing 3 indices');
+
+      expect(result[0].output[0].matchedIndices[0].start, equals(2),
+          reason: 'and the first index is a 2 character word');
+      expect(result[0].output[0].matchedIndices[0].end, equals(3),
+          reason: 'and the first index is a 2 character word');
+    });
+
+    test('When searching for a string shorter than minMatchCharLength', () {
+      final result = fuse.search('t');
+
+      expect(result.length, equals(1),
+          reason: 'We get a result with no matches');
+      expect(result[0].output[0].matchedIndices.length, equals(0),
+          reason: 'We get a result with no matches');
+    });
+  });
 }
