@@ -1,7 +1,7 @@
 import 'package:fuzzy/fuzzy.dart';
 
 void main() {
-  final fuse = Fuse(
+  final fuse = Fuzzy(
     [
       'igor da silva borges',
       'igor borges',

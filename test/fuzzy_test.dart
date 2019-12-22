@@ -18,11 +18,11 @@ final defaultOptions = FuzzyOptions(
   verbose: false,
 );
 
-Fuse setup({
+Fuzzy setup({
   List<String> itemList,
   FuzzyOptions overwriteOptions,
 }) {
-  return Fuse(
+  return Fuzzy(
     itemList ?? defaultList,
     options: defaultOptions.mergeWith(overwriteOptions),
   );
@@ -30,7 +30,7 @@ Fuse setup({
 
 void main() {
   group('Flat list of strings: ["Apple", "Orange", "Banana"]', () {
-    Fuse fuse;
+    Fuzzy fuse;
     setUp(() {
       fuse = setup();
     });
@@ -45,7 +45,7 @@ void main() {
   });
 
   group('Flat list of strings: ["Apple", "Orange", "Banana"]', () {
-    Fuse fuse;
+    Fuzzy fuse;
     setUp(() {
       fuse = setup();
     });
@@ -73,7 +73,7 @@ void main() {
   });
 
   group('Include score in result list: ["Apple", "Orange", "Banana"]', () {
-    Fuse fuse;
+    Fuzzy fuse;
     setUp(() {
       fuse = setup();
     });
@@ -101,14 +101,14 @@ void main() {
   });
 
   group('Weighted search', () {
-    Fuse fuse;
+    Fuzzy fuse;
     setUp(() {
       fuse = setup();
     });
   }, skip: true);
 
   group('Search with match all tokens', () {
-    Fuse fuse;
+    Fuzzy fuse;
     setUp(() {
       final customList = [
         'AustralianSuper - Corporate Division',
@@ -158,7 +158,7 @@ void main() {
   });
 
   group('Searching with default options', () {
-    Fuse fuse;
+    Fuzzy fuse;
     setUp(() {
       final customList = ['t te tes test tes te t'];
       fuse = setup(itemList: customList);
@@ -185,7 +185,7 @@ void main() {
   });
 
   group('Searching with findAllMatches', () {
-    Fuse fuse;
+    Fuzzy fuse;
     setUp(() {
       final customList = ['t te tes test tes te t'];
       fuse = setup(
@@ -210,7 +210,7 @@ void main() {
   });
 
   group('Searching with minCharLength', () {
-    Fuse fuse;
+    Fuzzy fuse;
     setUp(() {
       final customList = ['t te tes test tes te t'];
       fuse = setup(
@@ -244,11 +244,11 @@ void main() {
   });
 
   group('Sorted search results', () {
-    Fuse fuse;
+    Fuzzy fuse;
   }, skip: true);
 
   group('Searching using string large strings', () {
-    Fuse fuse;
+    Fuzzy fuse;
     setUp(() {
       final customList = [
         'pizza',
