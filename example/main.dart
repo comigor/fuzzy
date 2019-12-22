@@ -1,4 +1,3 @@
-import 'package:fuzzy/data/fuzzy_options.dart';
 import 'package:fuzzy/fuzzy.dart';
 
 void main() {
@@ -13,8 +12,6 @@ void main() {
     options: FuzzyOptions(
       minMatchCharLength: 3,
       findAllMatches: true,
-      includeMatches: true,
-      includeScore: true,
       tokenize: true,
     ),
   );

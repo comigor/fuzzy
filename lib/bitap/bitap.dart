@@ -13,6 +13,7 @@ class Bitap {
     }
   }
 
+  /// Configuration options.
   final FuzzyOptions options;
   String pattern;
   Map<String, int> patternAlphabet = {};

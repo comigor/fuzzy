@@ -1,5 +1,5 @@
-import 'package:fuzzy/bitap/bitap.dart';
-import 'package:fuzzy/bitap/data/bitap_index.dart';
+import '../bitap/bitap.dart';
+import '../bitap/data/bitap_index.dart';
 
 class Searchers {
   Searchers({

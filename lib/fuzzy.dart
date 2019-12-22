@@ -1,10 +1,10 @@
 import 'dart:math';
 
-import 'package:fuzzy/bitap/bitap.dart';
-import 'package:fuzzy/bitap/data/bitap_index.dart';
-import 'package:fuzzy/bitap/data/bitap_match_score.dart';
-import 'package:fuzzy/data/fuzzy_options.dart';
-import 'package:fuzzy/data/result.dart';
+import 'bitap/bitap.dart';
+import 'data/fuzzy_options.dart';
+import 'data/result.dart';
+
+export 'data/fuzzy_options.dart';
 
 /// Fuzzy search in Dart.
 ///
@@ -14,8 +14,8 @@ import 'package:fuzzy/data/result.dart';
 /// import 'package:fuzzy/fuzzy.dart';
 /// ```
 
-class Fuse {
-  Fuse(
+class Fuzzy {
+  Fuzzy(
     this.list, {
     FuzzyOptions options,
   }) : options = options ?? FuzzyOptions();

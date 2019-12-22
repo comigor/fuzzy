@@ -1,4 +1,3 @@
-import 'package:fuzzy/data/fuzzy_options.dart';
 import 'package:fuzzy/fuzzy.dart';
 import 'package:test/test.dart';
 
@@ -16,8 +15,6 @@ final defaultOptions = FuzzyOptions(
   sortFn: (a, b) => a.score.compareTo(b.score),
   tokenize: false,
   matchAllTokens: false,
-  includeMatches: false,
-  includeScore: false,
   verbose: false,
 );
 
@@ -78,11 +75,7 @@ void main() {
   group('Include score in result list: ["Apple", "Orange", "Banana"]', () {
     Fuse fuse;
     setUp(() {
-      fuse = setup(overwriteOptions: FuzzyOptions(includeScore: true));
-    });
-
-    test('should have the correct configuration', () {
-      expect(fuse.options.includeScore, true);
+      fuse = setup();
     });
 
     test('When searching for the term "Apple"', () {
@@ -110,7 +103,7 @@ void main() {
   group('Weighted search', () {
     Fuse fuse;
     setUp(() {
-      fuse = setup(overwriteOptions: FuzzyOptions(includeScore: true));
+      fuse = setup();
     });
   }, skip: true);
 
@@ -168,10 +161,7 @@ void main() {
     Fuse fuse;
     setUp(() {
       final customList = ['t te tes test tes te t'];
-      fuse = setup(
-        itemList: customList,
-        overwriteOptions: FuzzyOptions(includeMatches: true),
-      );
+      fuse = setup(itemList: customList);
     });
 
     test('When searching for the term "test"', () {
@@ -202,7 +192,6 @@ void main() {
         itemList: customList,
         overwriteOptions: FuzzyOptions(
           findAllMatches: true,
-          includeMatches: true,
         ),
       );
     });
@@ -228,7 +217,6 @@ void main() {
         itemList: customList,
         overwriteOptions: FuzzyOptions(
           minMatchCharLength: 2,
-          includeMatches: true,
         ),
       );
     });

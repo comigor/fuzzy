@@ -18,27 +18,57 @@ class FuzzyOptions {
     SorterFn sortFn,
     this.tokenize = false,
     this.matchAllTokens = false,
-    this.includeMatches = false,
-    this.includeScore = false,
     this.verbose = false,
   })  : tokenSeparator =
             tokenSeparator ?? RegExp(r' +', caseSensitive: isCaseSensitive),
         sortFn = sortFn ?? _defaultSortFn;
 
+  /// Approximately where in the text is the pattern expected to be found?
   final int location;
+
+  /// Determines how close the match must be to the fuzzy location (specified above).
+  /// An exact letter match which is 'distance' characters away from the fuzzy location
+  /// would score as a complete mismatch. A distance of '0' requires the match be at
+  /// the exact location specified, a threshold of '1000' would require a perfect match
+  /// to be within 800 characters of the fuzzy location to be found using a 0.8 threshold.
   final int distance;
+
+  /// At what point does the match algorithm give up. A threshold of '0.0' requires a perfect match
+  /// (of both letters and location), a threshold of '1.0' would match anything.
   final double threshold;
+
+  /// Machine word size
   final int maxPatternLength;
+
+  /// Indicates whether comparisons should be case sensitive.
   final bool isCaseSensitive;
+
+  /// Regex used to separate words when searching. Only applicable when `tokenize` is `true`.
   final Pattern tokenSeparator;
+
+  /// When true, the algorithm continues searching to the end of the input even if a perfect
+  /// match is found before the end of the same input.
   final bool findAllMatches;
+
+  /// Minimum number of characters that must be matched before a result is considered a match
   final int minMatchCharLength;
+
+  /// Whether to sort the result list, by score
   final bool shouldSort;
+
+  /// Default sort function
   final SorterFn sortFn;
+
+  /// When true, the search algorithm will search individual words **and** the full string,
+  /// computing the final score as a function of both. Note that when `tokenize` is `true`,
+  /// the `threshold`, `distance`, and `location` are inconsequential for individual tokens.
   final bool tokenize;
+
+  /// When true, the result set will only include records that match all tokens. Will only work
+  /// if `tokenize` is also true.
   final bool matchAllTokens;
-  final bool includeMatches;
-  final bool includeScore;
+
+  /// Will print to the console. Useful for debugging.
   final bool verbose;
 
   FuzzyOptions mergeWith(FuzzyOptions options) => FuzzyOptions(
@@ -54,8 +84,6 @@ class FuzzyOptions {
         sortFn: options?.sortFn ?? sortFn,
         tokenize: options?.tokenize ?? tokenize,
         matchAllTokens: options?.matchAllTokens ?? matchAllTokens,
-        includeMatches: options?.includeMatches ?? includeMatches,
-        includeScore: options?.includeScore ?? includeScore,
         verbose: options?.verbose ?? verbose,
       );
 }
