@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.1.0
+- First usable version, fixing stupid bugs from conversion, and with tests
+
 ## 0.0.2
 - Code ported from Fuse.js
 
