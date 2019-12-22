@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.1.1
+- Add string normalization, from [latinize](https://github.com/lucasmafra/latinize)
+
 ## 0.1.0
 - First usable version, fixing stupid bugs from conversion, and with tests
 

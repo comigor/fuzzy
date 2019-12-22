@@ -21,6 +21,7 @@ class FuzzyOptions {
     this.tokenize = false,
     this.matchAllTokens = false,
     this.verbose = false,
+    this.shouldNormalize = false,
   })  : tokenSeparator =
             tokenSeparator ?? RegExp(r' +', caseSensitive: isCaseSensitive),
         sortFn = sortFn ?? _defaultSortFn;
@@ -73,6 +74,10 @@ class FuzzyOptions {
   /// Will print to the console. Useful for debugging.
   final bool verbose;
 
+  /// Wether it should convert accents (diacritics) from strings to latin
+  /// characters before searching.
+  final bool shouldNormalize;
+
   /// Merge two options instances. Useful for overriding just some options.
   FuzzyOptions mergeWith(FuzzyOptions options) => FuzzyOptions(
         location: options?.location ?? location,
@@ -88,5 +93,6 @@ class FuzzyOptions {
         tokenize: options?.tokenize ?? tokenize,
         matchAllTokens: options?.matchAllTokens ?? matchAllTokens,
         verbose: options?.verbose ?? verbose,
+        shouldNormalize: options?.shouldNormalize ?? shouldNormalize,
       );
 }

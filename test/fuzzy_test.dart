@@ -299,4 +299,40 @@ void main() {
           equals('super+large+much+unique+36+very+wow+'));
     });
   });
+
+  group('On string normalization', () {
+    final diacriticList = ['Ápplé', 'Öřângè', 'Bánànã'];
+    Fuzzy fuse;
+    setUp(() {
+      fuse = setup(
+        itemList: diacriticList,
+        overwriteOptions: FuzzyOptions(shouldNormalize: true),
+      );
+    });
+
+    test('When searching for the term "rän"', () {
+      final result = fuse.search('rän');
+
+      expect(result.length, equals(2),
+          reason: 'we get a list of containing 2 items');
+      expect(result[0].item, equals(1),
+          reason: 'whose values represent the indices of ["Öřângè", "Bánànã"]');
+      expect(result[1].item, equals(2),
+          reason: 'whose values represent the indices of ["Öřângè", "Bánànã"]');
+    });
+  });
+
+  group('Without string normalization', () {
+    final diacriticList = ['Ápplé', 'Öřângè', 'Bánànã'];
+    Fuzzy fuse;
+    setUp(() {
+      fuse = setup(itemList: diacriticList);
+    });
+
+    test('Nothing is found without normalization', () {
+      final result = fuse.search('ran');
+
+      expect(result.length, equals(0));
+    });
+  });
 }
