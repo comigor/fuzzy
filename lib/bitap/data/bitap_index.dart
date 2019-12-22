@@ -3,4 +3,7 @@ class MatchIndex {
 
   final int start;
   final int end;
+
+  @override
+  String toString() => '[$start, $end]';
 }

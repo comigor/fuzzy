@@ -9,6 +9,10 @@ class Searchers {
 
   final List<Bitap> tokenSearchers;
   final Bitap fullSearcher;
+
+  @override
+  String toString() =>
+      'tokenSearchers: $tokenSearchers, fullSearcher: $fullSearcher';
 }
 
 class Result {
@@ -21,6 +25,9 @@ class Result {
   final int item;
   final List<ResultDetails> output;
   double score;
+
+  @override
+  String toString() => 'item: $item, score: $score, output: $output';
 }
 
 class ResultDetails {
@@ -39,4 +46,8 @@ class ResultDetails {
   final double score;
   double nScore;
   final List<MatchIndex> matchedIndices;
+
+  @override
+  String toString() =>
+      'key: $key, arrayIndex: $arrayIndex, value: $value, score: $score, nScore: $nScore, matchedIndices: $matchedIndices';
 }

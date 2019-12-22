@@ -30,4 +30,8 @@ class FuzzyOptions {
         findAllMatches: options?.findAllMatches ?? findAllMatches,
         minMatchCharLength: options?.minMatchCharLength ?? minMatchCharLength,
       );
+
+  @override
+  String toString() =>
+      'location: $location, distance: $distance, threshold: $threshold, maxPatternLength: $maxPatternLength, isCaseSensitive: $isCaseSensitive, tokenSeparator: $tokenSeparator, findAllMatches: $findAllMatches, minMatchCharLength: $minMatchCharLength';
 }

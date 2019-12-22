@@ -11,4 +11,8 @@ class MatchScore {
   final double score;
   final bool isMatch;
   final List<MatchIndex> matchedIndices;
+
+  @override
+  String toString() =>
+      'score: $score, isMatch: $isMatch, matchedIndices: $matchedIndices';
 }
