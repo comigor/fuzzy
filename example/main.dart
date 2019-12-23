@@ -41,6 +41,6 @@ void main() {
       'A score of 0 indicates a perfect match, while a score of 1 indicates a complete mismatch.');
 
   result.forEach((r) {
-    print('\nScore: ${r.score}\nTitle: ${bookList[r.item]}');
+    print('\nScore: ${r.score}\nTitle: ${r.item}');
   });
 }

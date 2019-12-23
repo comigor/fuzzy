@@ -40,28 +40,27 @@ class Result<T> {
   /// Instantiates it
   Result({
     this.item,
-    this.output,
+    this.matches = const [],
     this.score = 0,
   });
 
-  /// Index of result in the original list
-  final int item;
+  /// Item in the original list
+  final T item;
 
   /// Details of this result
-  final List<ResultDetails<T>> output;
+  final List<ResultDetails<T>> matches;
 
   /// Score of this result
   double score;
 
   @override
-  String toString() => 'item: $item, score: $score, output: $output';
+  String toString() => 'item: $item, score: $score, matches: $matches';
 }
 
 /// Details of a result.
 class ResultDetails<T> {
   /// Instantiates it
   ResultDetails({
-    this.key,
     this.arrayIndex,
     this.value,
     this.score,
@@ -69,14 +68,11 @@ class ResultDetails<T> {
     this.nScore,
   });
 
-  /// Key (not used, I think)
-  final String key;
-
   /// Index of result in the original list
   final int arrayIndex;
 
   /// Original value
-  final T value;
+  final String value;
 
   /// Score of this result
   final double score;
@@ -89,5 +85,5 @@ class ResultDetails<T> {
 
   @override
   String toString() =>
-      'key: $key, arrayIndex: $arrayIndex, value: $value, score: $score, nScore: $nScore, matchedIndices: $matchedIndices';
+      'arrayIndex: $arrayIndex, value: $value, score: $score, nScore: $nScore, matchedIndices: $matchedIndices';
 }

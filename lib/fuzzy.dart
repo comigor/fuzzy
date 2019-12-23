@@ -69,28 +69,54 @@ class Fuzzy<T> {
     final results = <Result<T>>[];
     final resultMap = <int, Result<T>>{};
 
-    // Iterate over every item
-    for (var i = 0, len = list.length; i < len; i += 1) {
-      _analyze(
-        key: '',
-        value: list[i],
-        record: i,
-        index: i,
-        tokenSearchers: tokenSearchers,
-        fullSearcher: fullSearcher,
-        results: results,
-        resultMap: resultMap,
-      );
+// Check the first item in the list, if it's a string, then we assume
+    // that every item in the list is also a string, and thus it's a flattened array.
+    if (list[0] is String) {
+      // Iterate over every item
+      for (var i = 0, len = list.length; i < len; i += 1) {
+        _analyze(
+          value: list[i].toString(),
+          record: list[i],
+          index: i,
+          tokenSearchers: tokenSearchers,
+          fullSearcher: fullSearcher,
+          results: results,
+          resultMap: resultMap,
+        );
+      }
+
+      return ResultsAndWeights(results: results, weights: {});
     }
 
-    return ResultsAndWeights(results: results, weights: {});
+    // Otherwise, the first item is an Object (hopefully), and thus the searching
+    // is done on the values of the keys of each item.
+    final weights = <String, double>{};
+    for (var i = 0, len = list.length; i < len; i += 1) {
+      final item = list[i];
+      // Iterate over every key
+      for (var j = 0; j < options.keys.length; j += 1) {
+        final value = options.keys[j](item);
+        weights.update(value, (_) => 1.0, ifAbsent: () => 1.0);
+
+        _analyze(
+          value: value,
+          record: list[i],
+          index: i,
+          tokenSearchers: tokenSearchers,
+          fullSearcher: fullSearcher,
+          results: results,
+          resultMap: resultMap,
+        );
+      }
+    }
+
+    return ResultsAndWeights(results: results, weights: weights);
   }
 
   List<Result<T>> _analyze({
-    String key = '',
     int arrayIndex = -1,
-    T value,
-    int record,
+    String value,
+    T record,
     int index,
     List<Bitap> tokenSearchers = const [],
     Bitap fullSearcher,
@@ -107,8 +133,6 @@ class Fuzzy<T> {
     var exists = false;
     var averageScore = -1;
     var numTextMatches = 0;
-
-    _log('\nKey: ${key == '' ? '-' : key}');
 
     final mainSearchResult = fullSearcher.search(value.toString());
     _log('Full text: "${value}", score: ${mainSearchResult.score}');
@@ -175,8 +199,7 @@ class Fuzzy<T> {
       if (existingResult != null) {
         // Use the lowest score
         // existingResult.score, bitapResult.score
-        existingResult.output.add(ResultDetails<T>(
-          key: key,
+        existingResult.matches.add(ResultDetails<T>(
           arrayIndex: arrayIndex,
           value: value,
           score: finalScore,
@@ -186,9 +209,8 @@ class Fuzzy<T> {
         // Add it to the raw result list
         final res = Result(
           item: record,
-          output: [
+          matches: [
             ResultDetails<T>(
-              key: key,
               arrayIndex: arrayIndex,
               value: value,
               score: finalScore,
@@ -214,22 +236,22 @@ class Fuzzy<T> {
     _log('\n\nComputing score:\n');
 
     for (var i = 0, len = results.length; i < len; i += 1) {
-      final output = results[i].output;
-      final scoreLen = output.length;
+      final matches = results[i].matches;
+      final scoreLen = matches.length;
 
       var currScore = 1.0;
       var bestScore = 1.0;
 
       for (var j = 0; j < scoreLen; j += 1) {
-        final weight = weights[output[j].key] ?? 1;
+        final weight = weights[matches[j].value] ?? 1;
         final score =
-            weight == 1 ? output[j].score : (output[j].score ?? 0.001);
+            weight == 1 ? matches[j].score : (matches[j].score ?? 0.001);
         final nScore = score * weight;
 
         if (weight != 1) {
           bestScore = min(bestScore, nScore);
         } else {
-          output[j].nScore = nScore;
+          matches[j].nScore = nScore;
           currScore *= nScore;
         }
       }
