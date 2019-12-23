@@ -1,5 +1,5 @@
 import '../bitap/bitap.dart';
-import '../bitap/data/bitap_index.dart';
+import '../bitap/data/match_index.dart';
 
 /// Class to hold searchers
 class Searchers {
@@ -21,7 +21,7 @@ class Searchers {
 }
 
 /// Holds the result (with score and index)
-class Result {
+class Result<T> {
   /// Instantiates it
   Result({
     this.item,
@@ -33,7 +33,7 @@ class Result {
   final int item;
 
   /// Details of this result
-  final List<ResultDetails> output;
+  final List<ResultDetails<T>> output;
 
   /// Score of this result
   double score;
@@ -43,7 +43,7 @@ class Result {
 }
 
 /// Details of a result.
-class ResultDetails {
+class ResultDetails<T> {
   /// Instantiates it
   ResultDetails({
     this.key,
@@ -61,7 +61,7 @@ class ResultDetails {
   final int arrayIndex;
 
   /// Original value
-  final String value;
+  final T value;
 
   /// Score of this result
   final double score;

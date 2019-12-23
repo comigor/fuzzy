@@ -1,5 +1,5 @@
-import 'data/bitap_index.dart';
-import 'data/bitap_match_score.dart';
+import 'data/match_index.dart';
+import 'data/match_score.dart';
 
 /// Pattern to exclude special characters
 final Pattern SPECIAL_CHARS_REGEX =

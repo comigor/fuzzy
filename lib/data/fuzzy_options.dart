@@ -1,11 +1,11 @@
 import 'result.dart';
 
-typedef SorterFn = int Function(Result a, Result b);
+typedef SorterFn<T> = int Function(Result<T> a, Result<T> b);
 
-int _defaultSortFn(Result a, Result b) => a.score.compareTo(b.score);
+int _defaultSortFn<T>(Result<T> a, Result<T> b) => a.score.compareTo(b.score);
 
 /// Options for performing a fuzzy search
-class FuzzyOptions {
+class FuzzyOptions<T> {
   /// Instantiate an options object
   FuzzyOptions({
     this.location = 0,
@@ -17,7 +17,7 @@ class FuzzyOptions {
     this.findAllMatches = false,
     this.minMatchCharLength = 1,
     this.shouldSort = true,
-    SorterFn sortFn,
+    SorterFn<T> sortFn,
     this.tokenize = false,
     this.matchAllTokens = false,
     this.verbose = false,
@@ -60,7 +60,7 @@ class FuzzyOptions {
   final bool shouldSort;
 
   /// Default sort function
-  final SorterFn sortFn;
+  final SorterFn<T> sortFn;
 
   /// When true, the search algorithm will search individual words **and** the full string,
   /// computing the final score as a function of both. Note that when `tokenize` is `true`,
@@ -79,7 +79,7 @@ class FuzzyOptions {
   final bool shouldNormalize;
 
   /// Merge two options instances. Useful for overriding just some options.
-  FuzzyOptions mergeWith(FuzzyOptions options) => FuzzyOptions(
+  FuzzyOptions<T> mergeWith(FuzzyOptions<T> options) => FuzzyOptions(
         location: options?.location ?? location,
         distance: options?.distance ?? distance,
         threshold: options?.threshold ?? threshold,

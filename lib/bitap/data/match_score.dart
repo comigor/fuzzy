@@ -1,4 +1,4 @@
-import 'bitap_index.dart';
+import 'match_index.dart';
 
 /// Holds match with its score
 class MatchScore {

@@ -13,21 +13,21 @@ export 'data/fuzzy_options.dart';
 /// ```
 /// import 'package:fuzzy/fuzzy.dart';
 /// ```
-class Fuzzy {
+class Fuzzy<T> {
   /// Instantiates it given a list of strings to look into, and options
   Fuzzy(
     this.list, {
-    FuzzyOptions options,
-  }) : options = options ?? FuzzyOptions();
+    FuzzyOptions<T> options,
+  }) : options = options ?? FuzzyOptions<T>();
 
   /// The original list of string
-  final List<String> list;
+  final List<T> list;
 
   /// Fuzz search Options
-  final FuzzyOptions options;
+  final FuzzyOptions<T> options;
 
   /// Search for a given [pattern] on the [list], optionally [limit]ing the result length
-  List<Result> search(String pattern, [int limit = -1]) {
+  List<Result<T>> search(String pattern, [int limit = -1]) {
     final searchers = _prepareSearchers(pattern);
 
     final results = _search(searchers.tokenSearchers, searchers.fullSearcher);
@@ -64,8 +64,8 @@ class Fuzzy {
     );
   }
 
-  List<Result> _search(List<Bitap> tokenSearchers, Bitap fullSearcher) {
-    final results = <Result>[];
+  List<Result<T>> _search(List<Bitap> tokenSearchers, Bitap fullSearcher) {
+    final results = <Result<T>>[];
 
     // Iterate over every item
     for (var i = 0, len = list.length; i < len; i += 1) {
@@ -82,17 +82,17 @@ class Fuzzy {
     return results;
   }
 
-  List<Result> _analyze({
+  List<Result<T>> _analyze({
     String key = '',
     int arrayIndex = -1,
-    String value,
+    T value,
     int record,
     int index,
     List<Bitap> tokenSearchers = const [],
     Bitap fullSearcher,
   }) {
-    final results = <Result>[];
-    final resultMap = <int, Result>{};
+    final results = <Result<T>>[];
+    final resultMap = <int, Result<T>>{};
     // Check if the texvaluet can be searched
     if (value == null) {
       return [];
@@ -104,11 +104,11 @@ class Fuzzy {
 
     _log('\nKey: ${key == '' ? '-' : key}');
 
-    final mainSearchResult = fullSearcher.search(value);
+    final mainSearchResult = fullSearcher.search(value.toString());
     _log('Full text: "${value}", score: ${mainSearchResult.score}');
 
     if (options.tokenize) {
-      final words = value.split(options.tokenSeparator);
+      final words = value.toString().split(options.tokenSeparator);
       final scores = <double>[];
 
       for (var i = 0; i < tokenSearchers.length; i += 1) {
@@ -169,7 +169,7 @@ class Fuzzy {
       if (existingResult != null) {
         // Use the lowest score
         // existingResult.score, bitapResult.score
-        existingResult.output.add(ResultDetails(
+        existingResult.output.add(ResultDetails<T>(
           key: key,
           arrayIndex: arrayIndex,
           value: value,
@@ -181,7 +181,7 @@ class Fuzzy {
         final res = Result(
           item: record,
           output: [
-            ResultDetails(
+            ResultDetails<T>(
               key: key,
               arrayIndex: arrayIndex,
               value: value,
@@ -204,7 +204,7 @@ class Fuzzy {
     return results;
   }
 
-  void _computeScore(Map<String, double> weights, List<Result> results) {
+  void _computeScore(Map<String, double> weights, List<Result<T>> results) {
     _log('\n\nComputing score:\n');
 
     for (var i = 0, len = results.length; i < len; i += 1) {
@@ -234,7 +234,7 @@ class Fuzzy {
     }
   }
 
-  void _sort(List<Result> results) {
+  void _sort(List<Result<T>> results) {
     _log('\n\nSorting....');
     results.sort(options.sortFn);
   }

@@ -1,4 +1,4 @@
-import 'data/bitap_index.dart';
+import 'data/match_index.dart';
 
 /// Retrieve all matched indexes given a mask and minimum length
 List<MatchIndex> matchedIndices(List<int> matchmask, int minMatchCharLength) {

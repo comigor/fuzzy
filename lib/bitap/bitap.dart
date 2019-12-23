@@ -4,8 +4,8 @@ import '../data/fuzzy_options.dart';
 import 'bitap_pattern_alphabet.dart' as pa;
 import 'bitap_search.dart';
 import 'bitap_regex_search.dart';
-import 'data/bitap_match_score.dart';
-import 'data/bitap_index.dart';
+import 'data/match_score.dart';
+import 'data/match_index.dart';
 
 /// The bitap algorithm (also known as the shift-or, shift-and or
 /// Baeza-Yates–Gonnet algorithm) is an approximate string matching algorithm.
