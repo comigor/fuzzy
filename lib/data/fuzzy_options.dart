@@ -1,8 +1,25 @@
 import 'result.dart';
 
-typedef SorterFn<T> = int Function(Result<T> a, Result<T> b);
+/// Represents a weighted getter of an item
+class WeightedKey<T> {
+  /// Instantiates it
+  WeightedKey({
+    this.name,
+    this.getter,
+    this.weight,
+  }) : assert(weight > 0 && weight <= 1);
 
-typedef GetterFn<T> = String Function(T obj);
+  /// Name of this getter
+  final String name;
+
+  /// Getter to a specifc string inside item
+  final String Function(T obj) getter;
+
+  /// Weight of this getter
+  final double weight;
+}
+
+typedef SorterFn<T> = int Function(Result<T> a, Result<T> b);
 
 int _defaultSortFn<T>(Result<T> a, Result<T> b) => a.score.compareTo(b.score);
 
@@ -59,8 +76,8 @@ class FuzzyOptions<T> {
   /// Minimum number of characters that must be matched before a result is considered a match
   final int minMatchCharLength;
 
-  /// List of getters to properties that will be searched
-  final List<GetterFn<T>> keys;
+  /// List of weighted getters to properties that will be searched
+  final List<WeightedKey<T>> keys;
 
   /// Whether to sort the result list, by score
   final bool shouldSort;

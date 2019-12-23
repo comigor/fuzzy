@@ -61,12 +61,16 @@ class Result<T> {
 class ResultDetails<T> {
   /// Instantiates it
   ResultDetails({
+    this.key = '',
     this.arrayIndex,
     this.value,
     this.score,
     this.matchedIndices,
     this.nScore,
   });
+
+  /// Key ([WeightedKey.name]) used to create this
+  final String key;
 
   /// Index of result in the original list
   final int arrayIndex;

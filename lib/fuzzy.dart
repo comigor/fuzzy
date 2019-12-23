@@ -1,3 +1,5 @@
+library fuzzy;
+
 import 'dart:math';
 
 import 'bitap/bitap.dart';
@@ -69,12 +71,13 @@ class Fuzzy<T> {
     final results = <Result<T>>[];
     final resultMap = <int, Result<T>>{};
 
-// Check the first item in the list, if it's a string, then we assume
+    // Check the first item in the list, if it's a string, then we assume
     // that every item in the list is also a string, and thus it's a flattened array.
     if (list[0] is String) {
       // Iterate over every item
       for (var i = 0, len = list.length; i < len; i += 1) {
         _analyze(
+          key: '',
           value: list[i].toString(),
           record: list[i],
           index: i,
@@ -95,10 +98,14 @@ class Fuzzy<T> {
       final item = list[i];
       // Iterate over every key
       for (var j = 0; j < options.keys.length; j += 1) {
-        final value = options.keys[j](item);
-        weights.update(value, (_) => 1.0, ifAbsent: () => 1.0);
+        final key = options.keys[j].name;
+        final value = options.keys[j].getter(item);
+
+        final weight = 1.0 - options.keys[j].weight ?? 0.0;
+        weights.update(key, (_) => weight, ifAbsent: () => weight);
 
         _analyze(
+          key: key,
           value: value,
           record: list[i],
           index: i,
@@ -114,6 +121,7 @@ class Fuzzy<T> {
   }
 
   List<Result<T>> _analyze({
+    String key = '',
     int arrayIndex = -1,
     String value,
     T record,
@@ -195,6 +203,7 @@ class Fuzzy<T> {
         // Use the lowest score
         // existingResult.score, bitapResult.score
         existingResult.matches.add(ResultDetails<T>(
+          key: key,
           arrayIndex: arrayIndex,
           value: value,
           score: finalScore,
@@ -206,6 +215,7 @@ class Fuzzy<T> {
           item: record,
           matches: [
             ResultDetails<T>(
+              key: key,
               arrayIndex: arrayIndex,
               value: value,
               score: finalScore,
@@ -238,9 +248,10 @@ class Fuzzy<T> {
       var bestScore = 1.0;
 
       for (var j = 0; j < scoreLen; j += 1) {
-        final weight = weights[matches[j].value] ?? 1;
-        final score =
-            weight == 1 ? matches[j].score : (matches[j].score ?? 0.001);
+        final weight = weights[matches[j].key] ?? 1.0;
+        final score = weight == 1.0
+            ? matches[j].score
+            : (matches[j].score == 0.0 ? 0.001 : matches[j].score);
         final nScore = score * weight;
 
         if (weight != 1) {
@@ -251,9 +262,7 @@ class Fuzzy<T> {
         }
       }
 
-      results[i].score = bestScore == 1 ? currScore : bestScore;
-
-      _log('${results[i]}');
+      results[i].score = bestScore == 1.0 ? currScore : bestScore;
     }
   }
 

@@ -1,6 +1,8 @@
 import 'package:fuzzy/fuzzy.dart';
 import 'package:test/test.dart';
 
+import 'fixtures/books.dart';
+
 final defaultList = ['Apple', 'Orange', 'Banana'];
 final defaultOptions = FuzzyOptions(
   location: 0,
@@ -19,7 +21,7 @@ final defaultOptions = FuzzyOptions(
 );
 
 Fuzzy setup({
-  List<String> itemList,
+  List itemList,
   FuzzyOptions overwriteOptions,
 }) {
   return Fuzzy(
@@ -102,12 +104,87 @@ void main() {
     });
   });
 
-  group('Weighted search', () {
-    Fuzzy fuse;
-    setUp(() {
-      fuse = setup();
+  group('Weighted search on typed list', () {
+    test('When searching for the term "John Smith" with author weighted higher',
+        () {
+      final fuse = Fuzzy<Book>(
+        customBookList,
+        options: FuzzyOptions(keys: [
+          WeightedKey(getter: (i) => i.title, weight: 0.3, name: 'title'),
+          WeightedKey(getter: (i) => i.author, weight: 0.7, name: 'author'),
+        ]),
+      );
+      final result = fuse.search('John Smith');
+
+      expect(result[0].item, customBookList[2],
+          reason: 'We get the the exactly matching object');
     });
-  }, skip: true);
+
+    test('When searching for the term "John Smith" with title weighted higher',
+        () {
+      final fuse = Fuzzy<Book>(
+        customBookList,
+        options: FuzzyOptions(keys: [
+          WeightedKey(getter: (i) => i.title, weight: 0.7, name: 'title'),
+          WeightedKey(getter: (i) => i.author, weight: 0.3, name: 'author'),
+        ]),
+      );
+      final result = fuse.search('John Smith');
+
+      expect(result[0].item, customBookList[3],
+          reason: 'We get the the exactly matching object');
+    });
+
+    test(
+        'When searching for the term "Man", where the author is weighted higher than title',
+        () {
+      final fuse = Fuzzy<Book>(
+        customBookList,
+        options: FuzzyOptions(keys: [
+          WeightedKey(getter: (i) => i.title, weight: 0.3, name: 'title'),
+          WeightedKey(getter: (i) => i.author, weight: 0.7, name: 'author'),
+        ]),
+      );
+      final result = fuse.search('Man');
+
+      expect(result[0].item, customBookList[1],
+          reason: 'We get the the exactly matching object');
+    });
+
+    test(
+        'When searching for the term "Man", where the title is weighted higher than author',
+        () {
+      final fuse = Fuzzy<Book>(
+        customBookList,
+        options: FuzzyOptions(keys: [
+          WeightedKey(getter: (i) => i.title, weight: 0.7, name: 'title'),
+          WeightedKey(getter: (i) => i.author, weight: 0.3, name: 'author'),
+        ]),
+      );
+      final result = fuse.search('Man');
+
+      expect(result[0].item, customBookList[0],
+          reason: 'We get the the exactly matching object');
+    });
+
+    test(
+        'When searching for the term "War", where tags are weighted higher than all other keys',
+        () {
+      final fuse = Fuzzy<Book>(
+        customBookList,
+        options: FuzzyOptions(keys: [
+          WeightedKey(getter: (i) => i.title, weight: 0.8, name: 'title'),
+          WeightedKey(getter: (i) => i.author, weight: 0.3, name: 'author'),
+          WeightedKey(
+              getter: (i) => i.tags.join(' '), weight: 0.9, name: 'tags'),
+        ]),
+      );
+      final result = fuse.search('War');
+
+      expect(result[0].item, customBookList[0],
+          reason: 'We get the the exactly matching object');
+    });
+  });
 
   group('Search with match all tokens', () {
     Fuzzy fuse;
