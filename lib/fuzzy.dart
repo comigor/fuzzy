@@ -146,26 +146,21 @@ class Fuzzy<T> {
 
         _log('\nPattern: "${tokenSearcher.pattern}"');
 
-        // let tokenScores = []
         var hasMatchInText = false;
 
         for (var j = 0; j < words.length; j += 1) {
           final word = words[j];
           final tokenSearchResult = tokenSearcher.search(word);
-          // final obj = {};
           if (tokenSearchResult.isMatch) {
-            // obj[word] = tokenSearchResult.score;
             exists = true;
             hasMatchInText = true;
             scores.add(tokenSearchResult.score);
           } else {
-            // obj[word] = 1;
             if (options.matchAllTokens) {
               scores.add(1);
             }
           }
           _log('Token: "${word}", score: ${tokenSearchResult.score}');
-          // tokenScores.push(obj)
         }
 
         if (hasMatchInText) {
