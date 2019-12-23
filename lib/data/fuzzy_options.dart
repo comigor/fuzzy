@@ -2,6 +2,8 @@ import 'result.dart';
 
 typedef SorterFn<T> = int Function(Result<T> a, Result<T> b);
 
+typedef GetterFn<T> = String Function(T obj);
+
 int _defaultSortFn<T>(Result<T> a, Result<T> b) => a.score.compareTo(b.score);
 
 /// Options for performing a fuzzy search
@@ -16,6 +18,7 @@ class FuzzyOptions<T> {
     Pattern tokenSeparator,
     this.findAllMatches = false,
     this.minMatchCharLength = 1,
+    this.keys = const [],
     this.shouldSort = true,
     SorterFn<T> sortFn,
     this.tokenize = false,
@@ -56,6 +59,9 @@ class FuzzyOptions<T> {
   /// Minimum number of characters that must be matched before a result is considered a match
   final int minMatchCharLength;
 
+  /// List of getters to properties that will be searched
+  final List<GetterFn<T>> keys;
+
   /// Whether to sort the result list, by score
   final bool shouldSort;
 
@@ -88,6 +94,7 @@ class FuzzyOptions<T> {
         tokenSeparator: options?.tokenSeparator ?? tokenSeparator,
         findAllMatches: options?.findAllMatches ?? findAllMatches,
         minMatchCharLength: options?.minMatchCharLength ?? minMatchCharLength,
+        keys: options?.keys ?? keys,
         shouldSort: options?.shouldSort ?? shouldSort,
         sortFn: options?.sortFn ?? sortFn,
         tokenize: options?.tokenize ?? tokenize,

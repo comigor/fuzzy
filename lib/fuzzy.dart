@@ -30,19 +30,20 @@ class Fuzzy<T> {
   List<Result<T>> search(String pattern, [int limit = -1]) {
     final searchers = _prepareSearchers(pattern);
 
-    final results = _search(searchers.tokenSearchers, searchers.fullSearcher);
+    final resultsAndWeights =
+        _search(searchers.tokenSearchers, searchers.fullSearcher);
 
-    _computeScore({}, results);
+    _computeScore(resultsAndWeights.weights, resultsAndWeights.results);
 
     if (options.shouldSort) {
-      _sort(results);
+      _sort(resultsAndWeights.results);
     }
 
     if (limit > 0) {
-      return results.sublist(0, limit);
+      return resultsAndWeights.results.sublist(0, limit);
     }
 
-    return results;
+    return resultsAndWeights.results;
   }
 
   Searchers _prepareSearchers(String pattern) {
@@ -64,22 +65,25 @@ class Fuzzy<T> {
     );
   }
 
-  List<Result<T>> _search(List<Bitap> tokenSearchers, Bitap fullSearcher) {
+  ResultsAndWeights<T> _search(List<Bitap> tokenSearchers, Bitap fullSearcher) {
     final results = <Result<T>>[];
+    final resultMap = <int, Result<T>>{};
 
     // Iterate over every item
     for (var i = 0, len = list.length; i < len; i += 1) {
-      results.addAll(_analyze(
+      _analyze(
         key: '',
         value: list[i],
         record: i,
         index: i,
         tokenSearchers: tokenSearchers,
         fullSearcher: fullSearcher,
-      ));
+        results: results,
+        resultMap: resultMap,
+      );
     }
 
-    return results;
+    return ResultsAndWeights(results: results, weights: {});
   }
 
   List<Result<T>> _analyze({
@@ -90,9 +94,11 @@ class Fuzzy<T> {
     int index,
     List<Bitap> tokenSearchers = const [],
     Bitap fullSearcher,
+    List<Result<T>> results,
+    Map<int, Result<T>> resultMap,
   }) {
-    final results = <Result<T>>[];
-    final resultMap = <int, Result<T>>{};
+    results ??= <Result<T>>[];
+    resultMap ??= <int, Result<T>>{};
     // Check if the texvaluet can be searched
     if (value == null) {
       return [];
@@ -197,7 +203,7 @@ class Fuzzy<T> {
           ifAbsent: () => res,
         );
 
-        results.add(resultMap[index]);
+        results.add(res);
       }
     }
 

@@ -20,6 +20,21 @@ class Searchers {
       'tokenSearchers: $tokenSearchers, fullSearcher: $fullSearcher';
 }
 
+/// Class to hold results and weights
+class ResultsAndWeights<T> {
+  /// Instantiates it
+  ResultsAndWeights({
+    this.results,
+    this.weights,
+  });
+
+  /// The list of results
+  final List<Result<T>> results;
+
+  /// The weights
+  final Map<String, double> weights;
+}
+
 /// Holds the result (with score and index)
 class Result<T> {
   /// Instantiates it
