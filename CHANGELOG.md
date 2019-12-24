@@ -1,17 +1,8 @@
 # CHANGELOG
 
-<<<<<<< Updated upstream
-## 0.2.0+1
+## 0.2.0+3
 - Testing GitHub actions
 
-=======
-<<<<<<< Updated upstream
-=======
-## 0.2.0+2
-- Testing GitHub actions
-
->>>>>>> Stashed changes
->>>>>>> Stashed changes
 ## 0.2.0
 - Make it generic (to use a List<T>), and perfrom weighted searches via predefined getters
 

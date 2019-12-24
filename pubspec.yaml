@@ -1,13 +1,5 @@
 name: fuzzy
-<<<<<<< Updated upstream
-version: 0.2.0+1
-=======
-<<<<<<< Updated upstream
-version: 0.2.0
-=======
-version: 0.2.0+2
->>>>>>> Stashed changes
->>>>>>> Stashed changes
+version: 0.2.0+3
 
 authors:
   - Igor Borges <igor@borges.dev>
