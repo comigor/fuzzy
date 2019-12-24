@@ -19,15 +19,19 @@ jobs:
       uses: actions/checkout@master
     - name: Check if version was changed and changelog updated
       run: |
+        echo "----------------install"
         GO111MODULE=on go get github.com/mikefarah/yq/v2
+        go get -u github.com/itchyny/gojq/cmd/gojq
+
         cd "$GITHUB_WORKSPACE"
+
         echo "----------------event"
         echo "$GITHUB_EVENT_PATH"
-        jq '.commits | length' "${GITHUB_EVENT_PATH}"
+        gojq '.commits | length' "${GITHUB_EVENT_PATH}"
         echo "----------------files"
         ls
         echo "----------------diff"
-        git diff HEAD~$(jq '.commits | length' "${GITHUB_EVENT_PATH}") pubspec.yaml
+        git diff HEAD~$(gojq '.commits | length' "${GITHUB_EVENT_PATH}") pubspec.yaml
         echo "----------------version"
         package_version=$(yq r pubspec.yaml version)
         echo "::set-env name=package_version::$package_version"
