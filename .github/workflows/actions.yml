@@ -49,8 +49,8 @@ jobs:
     - uses: actions/download-artifact@v1
       with:
         name: package_data
-    - run: echo "::set-env name=PACKAGE_VERSION::v$(cat package_data/artifacts/version)"
-    - run: echo "::set-env name=CHANGELOG::v$(cat package_data/artifacts/changelog)"
+    - run: echo "::set-env name=PACKAGE_VERSION::v$(cat package_data/version)"
+    - run: echo "::set-env name=CHANGELOG::v$(cat package_data/changelog)"
     - name: Push tag
       uses: anothrNick/github-tag-action@master
       env:
