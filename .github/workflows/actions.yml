@@ -21,12 +21,17 @@ jobs:
       run: |
         GO111MODULE=on go get github.com/mikefarah/yq/v2
         cd "$GITHUB_WORKSPACE"
-        git diff HEAD pubspec.yaml | grep -E '\+.*version' || exit 1
+        echo "----------------files"
+        ls
+        echo "----------------diff"
+        git diff HEAD pubspec.yaml | grep -E '\+.*version'
         package_version=$(yq r pubspec.yaml version)
         echo "::set-env name=package_version::$package_version"
         echo "::warning::$package_version"
+        echo "----------------version"
         echo "$package_version"
-        cat CHANGELOG.md | grep $version || exit 1
+        echo "----------------changelog"
+        cat CHANGELOG.md | grep $version
         exit 0
   deploy:
     needs: check-version
