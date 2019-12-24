@@ -24,14 +24,14 @@ jobs:
         echo "----------------files"
         ls
         echo "----------------diff"
-        git diff HEAD pubspec.yaml | grep -E '\+.*version'
+        git diff HEAD pubspec.yaml
         package_version=$(yq r pubspec.yaml version)
         echo "::set-env name=package_version::$package_version"
         echo "::warning::$package_version"
         echo "----------------version"
         echo "$package_version"
         echo "----------------changelog"
-        cat CHANGELOG.md | grep $version
+        cat CHANGELOG.md | grep $package_version
         exit 0
   deploy:
     needs: check-version
