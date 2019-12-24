@@ -10,68 +10,7 @@ jobs:
       uses: actions/checkout@master
     - name: Run tests
       uses: comigor/actions/dart-test@master
-<<<<<<< Updated upstream
   check-version-and-changelog:
-=======
-<<<<<<< Updated upstream
-=======
-  check-version-and-changelog:
-    needs: test
-    runs-on: ubuntu-latest
-    container: golang
-    steps:
-    - uses: actions/checkout@master
-    - run: |
-        go get -u github.com/itchyny/gojq/cmd/gojq
-        cd "$GITHUB_WORKSPACE"
-    - name: Check if version on pubspec.yaml was changed and if there's an entry for this new version on CHANGELOG
-      run: |
-        if test "${{ github.ref }}" = "refs/heads/master"; then
-          where=HEAD~$(gojq '.commits | length' "${GITHUB_EVENT_PATH}")
-        else
-          git fetch origin master:master
-          where=origin/master
-        fi
-
-        diff=$(git diff $where pubspec.yaml)
-        echo "$diff" | grep -E '\+.*version'
-
-        mkdir -p artifacts
-        git diff -U0 $where CHANGELOG.md | grep '^\+' | grep -Ev '^(--- a/|\+\+\+ b/)' | sed -E 's/^\+(.*)/\1/g' > artifacts/changelog
-
-        package_version=$(cat pubspec.yaml | gojq --yaml-input -r '.version')
-        cat CHANGELOG.md | grep "$package_version"
-        echo "$package_version" > artifacts/version
-    - uses: actions/upload-artifact@v1
-      with:
-        name: package_data
-        path: artifacts
-  create-tag-and-release:
-    needs: check-version-and-changelog
-    runs-on: ubuntu-latest
-    if: contains(github.ref, 'master')
-    steps:
-    - uses: actions/download-artifact@v1
-      with:
-        name: package_data
-    - run: echo "::set-env name=PACKAGE_VERSION::v$(cat package_data/version)"
-    - run: echo "::set-env name=CHANGELOG::v$(cat package_data/changelog)"
-    - name: Push tag
-      uses: anothrNick/github-tag-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        CUSTOM_TAG: ${{ env.PACKAGE_VERSION }}
-    - name: Create release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ env.PACKAGE_VERSION }}
-        release_name: Release ${{ env.PACKAGE_VERSION }}
-        body: ${{ env.CHANGELOG }}
->>>>>>> Stashed changes
-  deploy:
->>>>>>> Stashed changes
     needs: test
     runs-on: ubuntu-latest
     container: golang
