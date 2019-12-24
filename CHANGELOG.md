@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.2.0+1
+- Testing GitHub actions
+
 ## 0.2.0
 - Make it generic (to use a List<T>), and perfrom weighted searches via predefined getters
 
