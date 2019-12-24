@@ -23,10 +23,15 @@ jobs:
         go get -u github.com/itchyny/gojq/cmd/gojq
 
         cd "$GITHUB_WORKSPACE"
-
+        
         echo "----------------event"
         echo "$GITHUB_EVENT_PATH"
         cat "$GITHUB_EVENT_PATH" | gojq .
+
+        echo "----------------git"
+        echo "${{ github.sha }}"
+        git diff-tree --no-commit-id --name-only -r ${{ github.sha }}
+        git rev-parse --abbrev-ref HEAD
 
         echo "----------------diff"
         git diff HEAD~$(gojq '.commits | length' "${GITHUB_EVENT_PATH}") pubspec.yaml
