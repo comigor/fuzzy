@@ -29,7 +29,11 @@ jobs:
         cat "$GITHUB_EVENT_PATH" | gojq .
 
         echo "----------------git"
-        [[ "${{ github.ref }}" == "mastder" ]] && { git diff HEAD~$(gojq '.commits | length' "${GITHUB_EVENT_PATH}") pubspec.yaml; } || { git diff master pubspec.yaml; }
+        if [[ "${{ github.ref }}" == "master" ]]; then
+          git diff HEAD~$(gojq '.commits | length' "${GITHUB_EVENT_PATH}") pubspec.yaml
+        else
+          git diff master pubspec.yaml
+        fi
         echo oooooooooooooook
         git rev-parse --abbrev-ref HEAD
 
