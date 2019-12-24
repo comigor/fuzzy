@@ -13,11 +13,11 @@ jobs:
   check-version:
     needs: test
     runs-on: ubuntu-latest
+    container: mikefarah/yq
     steps:
     - name: Clone repository
       uses: actions/checkout@master
     - name: Check if version was changed and changelog updated
-      container: mikefarah/yq
       run: |
         git diff HEAD pubspec.yaml | grep -E '\+.*version' || exit 1
         package_version=$(yq r pubspec.yaml version)
