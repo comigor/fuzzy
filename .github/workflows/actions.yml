@@ -17,7 +17,7 @@ jobs:
     - name: Clone repository
       uses: actions/checkout@master
     - name: Check if version was changed and changelog updated
-      uses: docker://mikefarah/yq
+      container: mikefarah/yq
       run: |
         git diff HEAD pubspec.yaml | grep -E '\+.*version' || exit 1
         package_version=$(yq r pubspec.yaml version)
