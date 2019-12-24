@@ -32,7 +32,9 @@ jobs:
         if test "${{ github.ref }}" = "master"; then
           git diff HEAD~$(gojq '.commits | length' "${GITHUB_EVENT_PATH}") pubspec.yaml
         else
-          git diff master pubspec.yaml
+          git diff refs/heads/master pubspec.yaml || true
+          git diff origin/master pubspec.yaml || true
+          git diff master pubspec.yaml || true
         fi
         echo oooooooooooooook
         git rev-parse --abbrev-ref HEAD
