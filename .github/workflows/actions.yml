@@ -10,56 +10,40 @@ jobs:
   #     uses: actions/checkout@master
   #   - name: Run tests
   #     uses: comigor/actions/dart-test@master
-  check-version:
+  check-version-and-changelog:
     # needs: test
     runs-on: ubuntu-latest
     container: golang
     steps:
     - name: Clone repository
       uses: actions/checkout@master
-    - name: Check if version was changed and changelog updated
+    - run: go get -u github.com/itchyny/gojq/cmd/gojq
+    - name: Check if version on pubspec.yaml was changed
       run: |
-        echo "----------------install"
-        go get -u github.com/itchyny/gojq/cmd/gojq
-
         cd "$GITHUB_WORKSPACE"
-        
-        echo "----------------event"
-        echo "$GITHUB_EVENT_PATH"
-        cat "$GITHUB_EVENT_PATH" | gojq .
 
-        echo "----------------git"
         if test "${{ github.ref }}" = "master"; then
-          git diff HEAD~$(gojq '.commits | length' "${GITHUB_EVENT_PATH}") pubspec.yaml
+          diff=$(git diff HEAD~$(gojq '.commits | length' "${GITHUB_EVENT_PATH}") pubspec.yaml)
         else
           git fetch origin master:master
-          git diff refs/heads/master pubspec.yaml || true
-          git diff origin/master pubspec.yaml || true
-          git diff master pubspec.yaml || true
+          diff=$(git diff origin/master pubspec.yaml)
         fi
-        echo oooooooooooooook
-        git rev-parse --abbrev-ref HEAD
 
-        echo "----------------diff"
-        git diff HEAD~$(gojq '.commits | length' "${GITHUB_EVENT_PATH}") pubspec.yaml
+        echo "$diff" | grep -E '\+.*version'
+    - name: Check if there's an entry for this new version on CHANGELOG
+      run: |
+        cd "$GITHUB_WORKSPACE"
 
-        echo "----------------version"
         package_version=$(cat pubspec.yaml | gojq --yaml-input -r '.version')
-        echo "::set-env name=package_version::$package_version"
-        echo "::warning::$package_version"
-        echo "$package_version"
-
-        echo "----------------changelog"
         cat CHANGELOG.md | grep $package_version
-        exit 0
   deploy:
-    needs: check-version
-    runs-on: ubuntu-latest    
+    needs: check-version-and-changelog
+    runs-on: ubuntu-latest
     if: contains(github.ref, 'master')
-    steps:    
+    steps:
     - name: Clone repository
-      uses: actions/checkout@master          
+      uses: actions/checkout@master
     - name: Publish to pub.dev
-      uses: comigor/actions/pub-publish@master      
+      uses: comigor/actions/pub-publish@master
       env:
         PUB_CREDENTIALS: ${{ secrets.PUB_CREDENTIALS }}
