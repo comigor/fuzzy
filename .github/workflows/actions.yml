@@ -10,8 +10,17 @@ jobs:
       uses: actions/checkout@master
     - name: Run tests
       uses: comigor/actions/dart-test@master
-  deploy:
+  check-version:
     needs: test
+    runs-on: ubuntu-latest
+    if: contains(github.ref, 'master')
+    steps:
+    - name: Clone repository
+      uses: actions/checkout@master
+    - name: Check for version and changelog
+      uses: comigor/actions/check-version@master
+  deploy:
+    needs: check-version
     runs-on: ubuntu-latest    
     if: contains(github.ref, 'master')
     steps:    
