@@ -3,25 +3,24 @@ on: [pull_request, push]
 name: CI
 
 jobs:
-  # test:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - name: Clone repository
-  #     uses: actions/checkout@master
-  #   - name: Run tests
-  #     uses: comigor/actions/dart-test@master
-  check-version-and-changelog:
-    # needs: test
+  test:
     runs-on: ubuntu-latest
-    container: golang
     steps:
     - name: Clone repository
       uses: actions/checkout@master
-    - run: go get -u github.com/itchyny/gojq/cmd/gojq
+    - name: Run tests
+      uses: comigor/actions/dart-test@master
+  check-version-and-changelog:
+    needs: test
+    runs-on: ubuntu-latest
+    container: golang
+    steps:
+    - uses: actions/checkout@master
+    - run: |
+        go get -u github.com/itchyny/gojq/cmd/gojq
+        cd "$GITHUB_WORKSPACE"
     - name: Check if version on pubspec.yaml was changed
       run: |
-        cd "$GITHUB_WORKSPACE"
-
         if test "${{ github.ref }}" = "master"; then
           diff=$(git diff HEAD~$(gojq '.commits | length' "${GITHUB_EVENT_PATH}") pubspec.yaml)
         else
@@ -32,17 +31,33 @@ jobs:
         echo "$diff" | grep -E '\+.*version'
     - name: Check if there's an entry for this new version on CHANGELOG
       run: |
-        cd "$GITHUB_WORKSPACE"
-
         package_version=$(cat pubspec.yaml | gojq --yaml-input -r '.version')
-        cat CHANGELOG.md | grep $package_version
+        cat CHANGELOG.md | grep "$package_version"
+        echo "$package_version" > .version
+    - uses: actions/upload-artifact@v1
+      with:
+        name: package_version
+        path: .version
+  create-tag:
+    needs: check-version-and-changelog
+    runs-on: ubuntu-latest
+    if: contains(github.ref, 'master')
+    steps:
+    - uses: actions/download-artifact@v1
+      with:
+        name: package_version
+    - run: echo "::set-env name=PACKAGE_VERSION::v$(cat package_version/.version)"
+    - name: Push tag
+      uses: anothrNick/github-tag-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        CUSTOM_TAG: ${{ env.PACKAGE_VERSION }}
   deploy:
     needs: check-version-and-changelog
     runs-on: ubuntu-latest
     if: contains(github.ref, 'master')
     steps:
-    - name: Clone repository
-      uses: actions/checkout@master
+    - uses: actions/checkout@master
     - name: Publish to pub.dev
       uses: comigor/actions/pub-publish@master
       env:
