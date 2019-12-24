@@ -29,8 +29,8 @@ jobs:
         cat "$GITHUB_EVENT_PATH" | gojq .
 
         echo "----------------git"
-        echo "${{ github.sha }}"
-        git diff-tree --no-commit-id --name-only -r ${{ github.sha }}
+        [[ "${{ github.ref }}" == "mastder" ]] && { git diff HEAD~$(gojq '.commits | length' "${GITHUB_EVENT_PATH}") pubspec.yaml } || { git diff master pubspec.yaml }
+        echo oooooooooooooook
         git rev-parse --abbrev-ref HEAD
 
         echo "----------------diff"
