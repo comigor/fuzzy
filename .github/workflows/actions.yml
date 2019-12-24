@@ -21,9 +21,7 @@ jobs:
         cd "$GITHUB_WORKSPACE"
     - name: Check if version on pubspec.yaml was changed and if there's an entry for this new version on CHANGELOG
       run: |
-        cat "${GITHUB_EVENT_PATH}" || true
         git fetch --prune --unshallow
-        git diff head~1 || true
 
         if test "${{ github.ref }}" = "refs/heads/master"; then
           where=HEAD~$(gojq '.commits | length' "${GITHUB_EVENT_PATH}")
@@ -49,24 +47,27 @@ jobs:
     runs-on: ubuntu-latest
     if: contains(github.ref, 'master')
     steps:
+    - uses: actions/checkout@master
     - uses: actions/download-artifact@v1
       with:
         name: package_data
-    - run: echo "::set-env name=PACKAGE_VERSION::v$(cat package_data/version)"
-    - run: echo "::set-env name=CHANGELOG::v$(cat package_data/changelog)"
+    - id: vars
+      run: |
+        echo "::set-output name=package_version::v$(cat package_data/version)"
+        echo "::set-output name=changelog::$(cat package_data/changelog)"
     - name: Push tag
       uses: anothrNick/github-tag-action@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        CUSTOM_TAG: ${{ env.PACKAGE_VERSION }}
+        CUSTOM_TAG: ${{ steps.vars.outputs.package_version }}
     - name: Create release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ env.PACKAGE_VERSION }}
-        release_name: Release ${{ env.PACKAGE_VERSION }}
-        body: ${{ env.CHANGELOG }}
+        tag_name: ${{ steps.vars.outputs.package_version }}
+        release_name: Release ${{ steps.vars.outputs.package_version }}
+        body: ${{ steps.vars.outputs.changelog }}
   deploy:
     needs: create-tag-and-release
     runs-on: ubuntu-latest

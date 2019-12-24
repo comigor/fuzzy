@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.2.0+7
+## 0.2.0+8
 - Testing GitHub actions
 
 ## 0.2.0
