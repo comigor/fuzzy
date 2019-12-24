@@ -3,15 +3,15 @@ on: [pull_request, push]
 name: CI
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone repository
-      uses: actions/checkout@master
-    - name: Run tests
-      uses: comigor/actions/dart-test@master
+  # test:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Clone repository
+  #     uses: actions/checkout@master
+  #   - name: Run tests
+  #     uses: comigor/actions/dart-test@master
   check-version:
-    needs: test
+    # needs: test
     runs-on: ubuntu-latest
     container: golang
     steps:
