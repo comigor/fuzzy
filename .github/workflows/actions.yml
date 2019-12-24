@@ -21,10 +21,11 @@ jobs:
         cd "$GITHUB_WORKSPACE"
     - name: Check if version on pubspec.yaml was changed and if there's an entry for this new version on CHANGELOG
       run: |
-        git fetch origin master:master
         if test "${{ github.ref }}" = "refs/heads/master"; then
+          git pull origin
           where=HEAD~$(gojq '.commits | length' "${GITHUB_EVENT_PATH}")
         else
+          git fetch origin master:master
           where=origin/master
         fi
 
