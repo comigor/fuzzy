@@ -20,23 +20,23 @@ jobs:
     - name: Check if version was changed and changelog updated
       run: |
         echo "----------------install"
-        GO111MODULE=on go get github.com/mikefarah/yq/v2
         go get -u github.com/itchyny/gojq/cmd/gojq
 
         cd "$GITHUB_WORKSPACE"
 
         echo "----------------event"
         echo "$GITHUB_EVENT_PATH"
-        gojq '.commits | length' "${GITHUB_EVENT_PATH}"
-        echo "----------------files"
-        ls
+        cat "$GITHUB_EVENT_PATH" | gojq .
+
         echo "----------------diff"
         git diff HEAD~$(gojq '.commits | length' "${GITHUB_EVENT_PATH}") pubspec.yaml
+
         echo "----------------version"
-        package_version=$(yq r pubspec.yaml version)
+        package_version=$(cat pubspec.yaml | gojq --yaml-input -r '.version')
         echo "::set-env name=package_version::$package_version"
         echo "::warning::$package_version"
         echo "$package_version"
+
         echo "----------------changelog"
         cat CHANGELOG.md | grep $package_version
         exit 0
