@@ -30,6 +30,8 @@ class Fuzzy<T> {
 
   /// Search for a given [pattern] on the [list], optionally [limit]ing the result length
   List<Result<T>> search(String pattern, [int limit = -1]) {
+    if (list.isEmpty) return <Result<T>>[];
+
     final searchers = _prepareSearchers(pattern);
 
     final resultsAndWeights =

@@ -31,6 +31,17 @@ Fuzzy setup({
 }
 
 void main() {
+  group('Empty list of strings', () {
+    Fuzzy fuse;
+    setUp(() {
+      fuse = setup(itemList: <String>[]);
+    });
+    test('empty result is returned', () {
+      final result = fuse.search('Bla');
+      expect(result.isEmpty, true);
+    });
+  });
+
   group('Flat list of strings: ["Apple", "Orange", "Banana"]', () {
     Fuzzy fuse;
     setUp(() {

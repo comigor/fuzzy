@@ -1,4 +1,6 @@
 # CHANGELOG
+## 0.2.1
+- Fix bug for search empty list
 
 ## 0.2.0+8
 - Testing GitHub actions
