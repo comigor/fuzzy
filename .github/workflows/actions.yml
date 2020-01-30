@@ -1,4 +1,4 @@
-on: push
+on: [push, pull_request]
 
 name: CI
 
@@ -17,24 +17,20 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - run: |
-        go get -u github.com/itchyny/gojq/cmd/gojq
+        GO111MODULE=on go get -u github.com/itchyny/gojq/cmd/gojq@d24ecb5d89a9eee8b4cd2071bdff7585a8b44f0e
         cd "$GITHUB_WORKSPACE"
     - name: Check if version on pubspec.yaml was changed and if there's an entry for this new version on CHANGELOG
       run: |
         git fetch --prune --unshallow
-
         if test "${{ github.ref }}" = "refs/heads/master"; then
           where=HEAD~$(gojq '.commits | length' "${GITHUB_EVENT_PATH}")
         else
           where=origin/master
         fi
-
         diff=$(git diff $where pubspec.yaml)
         echo "$diff" | grep -E '\+.*version'
-
         mkdir -p artifacts
         git diff -U0 $where CHANGELOG.md | grep '^\+' | grep -Ev '^(--- a/|\+\+\+ b/)' | sed -E 's/^\+(.*)/\1/g' > artifacts/changelog
-
         package_version=$(cat pubspec.yaml | gojq --yaml-input -r '.version')
         cat CHANGELOG.md | grep "$package_version"
         echo "$package_version" > artifacts/version
