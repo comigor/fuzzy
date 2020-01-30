@@ -42,6 +42,19 @@ void main() {
     });
   });
 
+  group('Null list', () {
+    Fuzzy fuse;
+    List<String> items;
+    setUp(() {
+      fuse = Fuzzy(items, options: defaultOptions);
+    });
+    test('empty result is returned', () {
+      final result = fuse.search('Bla');
+      print(result);
+      expect(result.isEmpty, true);
+    });
+  });
+
   group('Flat list of strings: ["Apple", "Orange", "Banana"]', () {
     Fuzzy fuse;
     setUp(() {

@@ -18,9 +18,10 @@ export 'data/fuzzy_options.dart';
 class Fuzzy<T> {
   /// Instantiates it given a list of strings to look into, and options
   Fuzzy(
-    this.list, {
+    List<T> list, {
     FuzzyOptions<T> options,
-  }) : options = options ?? FuzzyOptions<T>();
+  })  : list = list ?? [],
+        options = options ?? FuzzyOptions<T>();
 
   /// The original list of string
   final List<T> list;
