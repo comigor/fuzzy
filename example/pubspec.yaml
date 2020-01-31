@@ -1,0 +1,12 @@
+name: fuzzy_example
+version: 0.0.1
+
+authors:
+  - Igor Borges <igor@borges.dev>
+
+environment:
+  sdk: '>=2.0.0 <3.0.0'
+
+dependencies:
+  fuzzy:
+    path: ../
