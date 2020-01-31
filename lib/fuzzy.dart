@@ -18,9 +18,10 @@ export 'data/fuzzy_options.dart';
 class Fuzzy<T> {
   /// Instantiates it given a list of strings to look into, and options
   Fuzzy(
-    this.list, {
+    List<T> list, {
     FuzzyOptions<T> options,
-  }) : options = options ?? FuzzyOptions<T>();
+  })  : list = list ?? [],
+        options = options ?? FuzzyOptions<T>();
 
   /// The original list of string
   final List<T> list;
@@ -30,6 +31,8 @@ class Fuzzy<T> {
 
   /// Search for a given [pattern] on the [list], optionally [limit]ing the result length
   List<Result<T>> search(String pattern, [int limit = -1]) {
+    if (list.isEmpty) return <Result<T>>[];
+
     final searchers = _prepareSearchers(pattern);
 
     final resultsAndWeights =
