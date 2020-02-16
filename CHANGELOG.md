@@ -1,4 +1,7 @@
 # CHANGELOG
+## 0.2.2
+- Fix bug for search in a list with some string that has leading or trailing whitespace when tokenize option is true
+
 ## 0.2.1
 - Fix bug for search empty list
 
