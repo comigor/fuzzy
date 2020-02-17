@@ -81,7 +81,7 @@ class Fuzzy<T> {
       for (var i = 0, len = list.length; i < len; i += 1) {
         _analyze(
           key: '',
-          value: list[i].toString(),
+          value: list[i].toString().trim(),
           record: list[i],
           index: i,
           tokenSearchers: tokenSearchers,

@@ -210,6 +210,28 @@ void main() {
     });
   });
 
+  group(
+      'Search with match all tokens in a list of strings with leading and trailing whitespace',
+      () {
+    Fuzzy fuse;
+    setUp(() {
+      final customList = [' Apple', 'Orange ', ' Banana '];
+      fuse = setup(
+        itemList: customList,
+        overwriteOptions: FuzzyOptions(tokenize: true),
+      );
+    });
+
+    test('When searching for the term "Banana"', () {
+      final result = fuse.search('Banana');
+
+      expect(result.length, 1, reason: 'we get a list of exactly 1 item');
+      expect(result[0].item, equals(' Banana '),
+          reason:
+              'whose value is the same, disconsidering leading and trailing whitespace');
+    });
+  });
+
   group('Search with match all tokens', () {
     Fuzzy fuse;
     setUp(() {
