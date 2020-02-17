@@ -227,7 +227,8 @@ void main() {
 
       expect(result.length, 1, reason: 'we get a list of exactly 1 item');
       expect(result[0].item, equals(' Banana '),
-          reason: 'whose value is the same, disconsidering leading and trailing whitespace');
+          reason:
+              'whose value is the same, disconsidering leading and trailing whitespace');
     });
   });
 
