@@ -33,6 +33,17 @@ class Fuzzy<T> {
   List<Result<T>> search(String pattern, [int limit = -1]) {
     if (list.isEmpty) return <Result<T>>[];
 
+    // Return original list as [List<Result>] if pattern is empty
+    if (pattern == '') {
+      return list
+          .map((item) => Result<T>(
+                item: item,
+                matches: const [],
+                score: 0,
+              ))
+          .toList();
+    }
+
     final searchers = _prepareSearchers(pattern);
 
     final resultsAndWeights =

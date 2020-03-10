@@ -1,13 +1,15 @@
+import 'package:meta/meta.dart';
+
 import 'result.dart';
 
 /// Represents a weighted getter of an item
 class WeightedKey<T> {
   /// Instantiates it
   WeightedKey({
-    this.name,
-    this.getter,
-    this.weight,
-  }) : assert(weight > 0 && weight <= 1);
+    @required this.name,
+    @required this.getter,
+    @required this.weight,
+  }) : assert(weight >= 0 && weight <= 1);
 
   /// Name of this getter
   final String name;
