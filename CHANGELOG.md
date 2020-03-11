@@ -1,4 +1,8 @@
 # CHANGELOG
+
+## 0.2.3
+- Fix some corner case bugs (empty search pattern, missing arguments)
+
 ## 0.2.2
 - Fix bug for search in a list with some string that has leading or trailing whitespace when tokenize option is true
 

@@ -10,6 +10,9 @@ List<MatchIndex> matchedIndices(List<int> matchmask, int minMatchCharLength) {
   var end = -1;
   var i = 0;
 
+  // Abort if [matchmask] is empty
+  if (matchmask.isEmpty) return matchedIndices;
+
   for (var len = matchmask.length; i < len; i += 1) {
     var match = matchmask[i];
     if (match != 0 && start == -1) {
