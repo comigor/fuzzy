@@ -21,18 +21,18 @@ final defaultOptions = FuzzyOptions(
 );
 
 Fuzzy setup({
-  List itemList,
-  FuzzyOptions overwriteOptions,
+  List? itemList,
+  FuzzyOptions? options,
 }) {
   return Fuzzy(
     itemList ?? defaultList,
-    options: defaultOptions.mergeWith(overwriteOptions),
+    options: options ?? defaultOptions,
   );
 }
 
 void main() {
   group('Empty list of strings', () {
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       fuse = setup(itemList: <String>[]);
     });
@@ -42,21 +42,8 @@ void main() {
     });
   });
 
-  group('Null list', () {
-    Fuzzy fuse;
-    List<String> items;
-    setUp(() {
-      fuse = Fuzzy(items, options: defaultOptions);
-    });
-    test('empty result is returned', () {
-      final result = fuse.search('Bla');
-      print(result);
-      expect(result.isEmpty, true);
-    });
-  });
-
   group('Flat list of strings: ["Apple", "Orange", "Banana"]', () {
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       fuse = setup();
     });
@@ -71,7 +58,7 @@ void main() {
   });
 
   group('Flat list of strings: ["Apple", "Orange", "Banana"]', () {
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       fuse = setup();
     });
@@ -99,7 +86,7 @@ void main() {
   });
 
   group('Include score in result list: ["Apple", "Orange", "Banana"]', () {
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       fuse = setup();
     });
@@ -213,12 +200,12 @@ void main() {
   group(
       'Search with match all tokens in a list of strings with leading and trailing whitespace',
       () {
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       final customList = [' Apple', 'Orange ', ' Banana '];
       fuse = setup(
         itemList: customList,
-        overwriteOptions: FuzzyOptions(tokenize: true),
+        options: defaultOptions.copyWith(tokenize: true),
       );
     });
 
@@ -233,7 +220,7 @@ void main() {
   });
 
   group('Search with match all tokens', () {
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       final customList = [
         'AustralianSuper - Corporate Division',
@@ -244,7 +231,7 @@ void main() {
       ];
       fuse = setup(
         itemList: customList,
-        overwriteOptions: FuzzyOptions(tokenize: true),
+        options: defaultOptions.copyWith(tokenize: true),
       );
     });
 
@@ -272,7 +259,7 @@ void main() {
   });
 
   group('Searching with default options', () {
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       final customList = ['t te tes test tes te t'];
       fuse = setup(itemList: customList);
@@ -299,12 +286,12 @@ void main() {
   });
 
   group('Searching with findAllMatches', () {
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       final customList = ['t te tes test tes te t'];
       fuse = setup(
         itemList: customList,
-        overwriteOptions: FuzzyOptions(
+        options: defaultOptions.copyWith(
           findAllMatches: true,
         ),
       );
@@ -324,12 +311,12 @@ void main() {
   });
 
   group('Searching with minCharLength', () {
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       final customList = ['t te tes test tes te t'];
       fuse = setup(
         itemList: customList,
-        overwriteOptions: FuzzyOptions(
+        options: defaultOptions.copyWith(
           minMatchCharLength: 2,
         ),
       );
@@ -358,11 +345,11 @@ void main() {
   });
 
   group('Sorted search results', () {
-    Fuzzy fuse;
+    late Fuzzy fuse;
   }, skip: true);
 
   group('Searching using string large strings', () {
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       final customList = [
         'pizza',
@@ -371,7 +358,7 @@ void main() {
       ];
       fuse = setup(
         itemList: customList,
-        overwriteOptions: FuzzyOptions(
+        options: defaultOptions.copyWith(
           threshold: 0.5,
           location: 0,
           distance: 0,
@@ -416,11 +403,11 @@ void main() {
 
   group('On string normalization', () {
     final diacriticList = ['Ápplé', 'Öřângè', 'Bánànã'];
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       fuse = setup(
         itemList: diacriticList,
-        overwriteOptions: FuzzyOptions(shouldNormalize: true),
+        options: defaultOptions.copyWith(shouldNormalize: true),
       );
     });
 
@@ -436,7 +423,7 @@ void main() {
 
   group('Without string normalization', () {
     final diacriticList = ['Ápplé', 'Öřângè', 'Bánànã'];
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       fuse = setup(itemList: diacriticList);
     });

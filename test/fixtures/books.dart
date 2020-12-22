@@ -1,7 +1,7 @@
 class Book {
   Book({
-    this.title,
-    this.author,
+    required this.title,
+    required this.author,
     this.tags = const [],
   });
 

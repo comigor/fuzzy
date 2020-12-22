@@ -1,14 +1,12 @@
-import 'package:meta/meta.dart';
-
 import 'result.dart';
 
 /// Represents a weighted getter of an item
 class WeightedKey<T> {
   /// Instantiates it
   WeightedKey({
-    @required this.name,
-    @required this.getter,
-    @required this.weight,
+    required this.name,
+    required this.getter,
+    required this.weight,
   }) : assert(weight >= 0 && weight <= 1);
 
   /// Name of this getter
@@ -21,6 +19,7 @@ class WeightedKey<T> {
   final double weight;
 }
 
+/// Function used to sort results.
 typedef SorterFn<T> = int Function(Result<T> a, Result<T> b);
 
 int _defaultSortFn<T>(Result<T> a, Result<T> b) => a.score.compareTo(b.score);
@@ -34,12 +33,12 @@ class FuzzyOptions<T> {
     this.threshold = 0.6,
     this.maxPatternLength = 32,
     this.isCaseSensitive = false,
-    Pattern tokenSeparator,
+    Pattern? tokenSeparator,
     this.findAllMatches = false,
     this.minMatchCharLength = 1,
     this.keys = const [],
     this.shouldSort = true,
-    SorterFn<T> sortFn,
+    SorterFn<T>? sortFn,
     this.tokenize = false,
     this.matchAllTokens = false,
     this.verbose = false,
@@ -103,22 +102,39 @@ class FuzzyOptions<T> {
   /// characters before searching.
   final bool shouldNormalize;
 
-  /// Merge two options instances. Useful for overriding just some options.
-  FuzzyOptions<T> mergeWith(FuzzyOptions<T> options) => FuzzyOptions(
-        location: options?.location ?? location,
-        distance: options?.distance ?? distance,
-        threshold: options?.threshold ?? threshold,
-        maxPatternLength: options?.maxPatternLength ?? maxPatternLength,
-        isCaseSensitive: options?.isCaseSensitive ?? isCaseSensitive,
-        tokenSeparator: options?.tokenSeparator ?? tokenSeparator,
-        findAllMatches: options?.findAllMatches ?? findAllMatches,
-        minMatchCharLength: options?.minMatchCharLength ?? minMatchCharLength,
-        keys: options?.keys ?? keys,
-        shouldSort: options?.shouldSort ?? shouldSort,
-        sortFn: options?.sortFn ?? sortFn,
-        tokenize: options?.tokenize ?? tokenize,
-        matchAllTokens: options?.matchAllTokens ?? matchAllTokens,
-        verbose: options?.verbose ?? verbose,
-        shouldNormalize: options?.shouldNormalize ?? shouldNormalize,
+  /// Copy these options with some modifications.
+  FuzzyOptions<T> copyWith({
+    int? location,
+    int? distance,
+    double? threshold,
+    int? maxPatternLength,
+    bool? isCaseSensitive,
+    Pattern? tokenSeparator,
+    bool? findAllMatches,
+    int? minMatchCharLength,
+    List<WeightedKey<T>>? keys,
+    bool? shouldSort,
+    SorterFn<T>? sortFn,
+    bool? tokenize,
+    bool? matchAllTokens,
+    bool? verbose,
+    bool? shouldNormalize,
+  }) =>
+      FuzzyOptions(
+        location: location ?? this.location,
+        distance: distance ?? this.distance,
+        threshold: threshold ?? this.threshold,
+        maxPatternLength: maxPatternLength ?? this.maxPatternLength,
+        isCaseSensitive: isCaseSensitive ?? this.isCaseSensitive,
+        tokenSeparator: tokenSeparator ?? this.tokenSeparator,
+        findAllMatches: findAllMatches ?? this.findAllMatches,
+        minMatchCharLength: minMatchCharLength ?? this.minMatchCharLength,
+        keys: keys ?? this.keys,
+        shouldSort: shouldSort ?? this.shouldSort,
+        sortFn: sortFn ?? this.sortFn,
+        tokenize: tokenize ?? this.tokenize,
+        matchAllTokens: matchAllTokens ?? this.matchAllTokens,
+        verbose: verbose ?? this.verbose,
+        shouldNormalize: shouldNormalize ?? this.shouldNormalize,
       );
 }

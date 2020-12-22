@@ -18,8 +18,8 @@ export 'data/fuzzy_options.dart';
 class Fuzzy<T> {
   /// Instantiates it given a list of strings to look into, and options
   Fuzzy(
-    List<T> list, {
-    FuzzyOptions<T> options,
+    List<T>? list, {
+    FuzzyOptions<T>? options,
   })  : list = list ?? [],
         options = options ?? FuzzyOptions<T>();
 
@@ -115,7 +115,7 @@ class Fuzzy<T> {
         final key = options.keys[j].name;
         final value = options.keys[j].getter(item);
 
-        final weight = 1.0 - options.keys[j].weight ?? 0.0;
+        final weight = 1.0 - options.keys[j].weight;
         weights.update(key, (_) => weight, ifAbsent: () => weight);
 
         _analyze(
@@ -137,18 +137,16 @@ class Fuzzy<T> {
   List<Result<T>> _analyze({
     String key = '',
     int arrayIndex = -1,
-    String value,
-    T record,
-    int index,
+    required String value,
+    required T record,
+    required int index,
     List<Bitap> tokenSearchers = const [],
-    Bitap fullSearcher,
-    List<Result<T>> results,
-    Map<int, Result<T>> resultMap,
+    required Bitap fullSearcher,
+    List<Result<T>> results = const [],
+    Map<int, Result<T>> resultMap = const {},
   }) {
-    results ??= <Result<T>>[];
-    resultMap ??= <int, Result<T>>{};
     // Check if the texvaluet can be searched
-    if (value == null) {
+    if (value.isEmpty) {
       return [];
     }
 
@@ -191,7 +189,7 @@ class Fuzzy<T> {
       }
 
       final averageScore =
-          scores.fold(0, (memo, score) => memo + score) / scores.length;
+          scores.fold<double>(0, (memo, score) => memo + score) / scores.length;
 
       _log('Token score average: $averageScore');
     }

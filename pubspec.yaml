@@ -1,8 +1,9 @@
 name: fuzzy
-version: 0.2.3
+version: 0.3.0-nullsafety.0
 
 authors:
   - Igor Borges <igor@borges.dev>
+  - anirudhb <anirudhb@users.noreply.github.com>
 
 description: >
   Fuzzy search in Dart. Basically a code conversion, subset of Fuse.js.
@@ -11,12 +12,10 @@ repository: https://github.com/comigor/fuzzy
 issue_tracker: https://github.com/comigor/fuzzy/issues
 
 environment:
-  sdk: ">=2.6.0 <3.0.0"
+  sdk: ">=2.12.0-0.dev <3.0.0"
 
 dependencies:
-  latinize: ^0.0.2
-  meta: ^1.1.8
 
 dev_dependencies:
-  test: ^1.9.4
-  pedantic: ^1.9.0
+  test: ^1.16.0-nullsafety.13
+  pedantic: ^1.10.0-nullsafety.3

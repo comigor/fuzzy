@@ -8,8 +8,6 @@ final Pattern SPECIAL_CHARS_REGEX =
 /// Execute a bitap regex search
 MatchScore bitapRegexSearch(
     String text, String pattern, Pattern tokenSeparator) {
-  tokenSeparator ??= RegExp(r' +');
-
   final regex = RegExp(pattern
       .replaceAll(SPECIAL_CHARS_REGEX, r'\$&')
       .replaceAll(tokenSeparator, '|'));
