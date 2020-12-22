@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.3.0-nullsafety.0
+- Migrate to null safety
+
 ## 0.2.3
 - Fix some corner case bugs (empty search pattern, missing arguments)
 
