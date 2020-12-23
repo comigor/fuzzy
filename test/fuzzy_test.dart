@@ -50,7 +50,6 @@ void main() {
     });
     test('empty result is returned', () {
       final result = fuse.search('Bla');
-      print(result);
       expect(result.isEmpty, true);
     });
   });
@@ -229,6 +228,56 @@ void main() {
       expect(result[0].item, equals(' Banana '),
           reason:
               'whose value is the same, disconsidering leading and trailing whitespace');
+    });
+  });
+
+  group(
+      'Search with tokenize where the search pattern starts or ends with the tokenSeparator',
+      () {
+    group('With the default tokenSeparator, which is white space', () {
+      Fuzzy fuse;
+      setUp(() {
+        fuse = setup(overwriteOptions: FuzzyOptions(tokenize: true));
+      });
+
+      test('When the search pattern starts with white space', () {
+        final result = fuse.search(' Apple');
+
+        expect(result.length, 1, reason: 'we get a list of exactly 1 item');
+        expect(result[0].item, equals('Apple'));
+      });
+
+      test('When the search pattern ends with white space', () {
+        final result = fuse.search('Apple ');
+
+        expect(result.length, 1, reason: 'we get a list of exactly 1 item');
+        expect(result[0].item, equals('Apple'));
+      });
+
+      test('When the search pattern contains white space in the middle', () {
+        final result = fuse.search('Apple Orange');
+
+        expect(result.length, 2, reason: 'we get a list of exactly 2 itens');
+        expect(result[0].item, equals('Orange'));
+        expect(result[1].item, equals('Apple'));
+      });
+    });
+
+    group('With a custom tokenSeparator', () {
+      Fuzzy fuse;
+      setUp(() {
+        fuse = setup(
+            overwriteOptions:
+                FuzzyOptions(tokenize: true, tokenSeparator: RegExp(';')));
+      });
+
+      test('When the search pattern ends with a tokenSeparator match', () {
+        final result = fuse.search('Apple;Orange;');
+
+        expect(result.length, 2, reason: 'we get a list of exactly 2 itens');
+        expect(result[0].item, equals('Orange'));
+        expect(result[1].item, equals('Apple'));
+      });
     });
   });
 
