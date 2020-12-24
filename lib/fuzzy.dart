@@ -137,7 +137,6 @@ class Fuzzy<T> {
 
   List<Result<T>> _analyze({
     String key = '',
-    int arrayIndex = -1,
     String value,
     T record,
     int index,
@@ -219,7 +218,7 @@ class Fuzzy<T> {
         // existingResult.score, bitapResult.score
         existingResult.matches.add(ResultDetails<T>(
           key: key,
-          arrayIndex: arrayIndex,
+          arrayIndex: index,
           value: value,
           score: finalScore,
           matchedIndices: mainSearchResult.matchedIndices,
@@ -231,7 +230,7 @@ class Fuzzy<T> {
           matches: [
             ResultDetails<T>(
               key: key,
-              arrayIndex: arrayIndex,
+              arrayIndex: index,
               value: value,
               score: finalScore,
               matchedIndices: mainSearchResult.matchedIndices,

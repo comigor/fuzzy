@@ -127,6 +127,25 @@ void main() {
     });
   });
 
+  group('Include arrayIndex in result list', () {
+    Fuzzy fuse;
+    setUp(() {
+      fuse = setup();
+    });
+
+    test('When performing a fuzzy search for the term "ran"', () {
+      final result = fuse.search('ran');
+
+      expect(result.length, 2, reason: 'we get a list of containing 2 items');
+
+      expect(result[0].item, equals('Orange'));
+      expect(result[0].matches.single.arrayIndex, 1);
+
+      expect(result[1].item, equals('Banana'));
+      expect(result[1].matches.single.arrayIndex, 2);
+    });
+  });
+
   group('Weighted search on typed list', () {
     test('When searching for the term "John Smith" with author weighted higher',
         () {
