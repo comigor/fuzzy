@@ -268,7 +268,7 @@ class Fuzzy<T> {
             : (matches[j].score == 0.0 ? 0.001 : matches[j].score);
         final nScore = score * weight;
 
-        if (weight != 1) {
+        if (weight == 1) {
           bestScore = min(bestScore, nScore);
         } else {
           matches[j].nScore = nScore;
