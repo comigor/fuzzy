@@ -309,6 +309,34 @@ void main() {
     });
   });
 
+  group('FuzzyOptions normalizes the keys weights', () {
+    test('Checks that the initial weights are positive', () {
+      expect(
+          () => FuzzyOptions(keys: [
+                WeightedKey(name: 'name', getter: (i) => i, weight: 0),
+              ]),
+          throwsArgumentError);
+
+      expect(
+          () => FuzzyOptions(keys: [
+                WeightedKey(name: 'name', getter: (i) => i, weight: -1),
+              ]),
+          throwsArgumentError);
+    });
+
+    test('Normalizes weights', () {
+      var options = FuzzyOptions(keys: [
+        WeightedKey(name: 'name1', getter: (i) => i, weight: 0.5),
+        WeightedKey(name: 'name2', getter: (i) => i, weight: 0.5),
+        WeightedKey(name: 'name3', getter: (i) => i, weight: 3),
+      ]);
+
+      expect(options.keys[0].weight, 0.125);
+      expect(options.keys[1].weight, 0.125);
+      expect(options.keys[2].weight, 0.75);
+    });
+  });
+
   group(
       'Search with match all tokens in a list of strings with leading and trailing whitespace',
       () {
