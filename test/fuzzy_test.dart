@@ -2,6 +2,7 @@ import 'package:fuzzy/fuzzy.dart';
 import 'package:test/test.dart';
 
 import 'fixtures/books.dart';
+import 'fixtures/games.dart';
 
 final defaultList = ['Apple', 'Orange', 'Banana'];
 final defaultOptions = FuzzyOptions(
@@ -225,6 +226,86 @@ void main() {
 
       expect(result[0].item, customBookList[0],
           reason: 'We get the the exactly matching object');
+    });
+  });
+
+  group('Weighted search considers all keys in score', () {
+    Fuzzy<Game> getFuzzy({double tournamentWeight, stageWeight}) {
+      return Fuzzy<Game>(
+        customGameList,
+        options: FuzzyOptions(
+          keys: [
+            WeightedKey(
+                getter: (i) => i.tournament,
+                weight: tournamentWeight,
+                name: 'tournament'),
+            WeightedKey(
+                getter: (i) => i.stage, weight: stageWeight, name: 'stage'),
+          ],
+          tokenize: true,
+        ),
+      );
+    }
+
+    test('When searching for "WorldCup Final", where weights are equal', () {
+      final fuse = getFuzzy(
+        tournamentWeight: 0.5,
+        stageWeight: 0.5,
+      );
+      final result = fuse.search('WorldCup Final');
+
+      void expectLess(String a, String b) {
+        double scoreOf(String s) =>
+            result.singleWhere((e) => e.item.toString() == s).score;
+        expect(scoreOf(a), lessThan(scoreOf(b)));
+      }
+
+      expectLess('WorldCup Final', 'WorldCup Semi-finals');
+      expectLess('WorldCup Semi-finals', 'WorldCup Groups');
+      expectLess('WorldCup Groups', 'ChampionsLeague Final');
+      expectLess('ChampionsLeague Final', 'ChampionsLeague Semi-finals');
+    });
+
+    test(
+        'When searching for "WorldCup Final", where the tournament is weighted higher',
+        () {
+      final fuse = getFuzzy(
+        tournamentWeight: 0.8,
+        stageWeight: 0.2,
+      );
+      final result = fuse.search('WorldCup Final');
+
+      void expectLess(String a, String b) {
+        double scoreOf(String s) =>
+            result.singleWhere((e) => e.item.toString() == s).score;
+        expect(scoreOf(a), lessThan(scoreOf(b)));
+      }
+
+      expectLess('WorldCup Final', 'WorldCup Semi-finals');
+      expectLess('WorldCup Semi-finals', 'WorldCup Groups');
+      expectLess('WorldCup Groups', 'ChampionsLeague Final');
+      expectLess('ChampionsLeague Final', 'ChampionsLeague Semi-finals');
+    });
+
+    test(
+        'When searching for "WorldCup Final", where the stage is weighted higher',
+        () {
+      final fuse = getFuzzy(
+        tournamentWeight: 0.2,
+        stageWeight: 0.8,
+      );
+      final result = fuse.search('WorldCup Final');
+
+      void expectLess(String a, String b) {
+        double scoreOf(String s) =>
+            result.singleWhere((e) => e.item.toString() == s).score;
+        expect(scoreOf(a), lessThan(scoreOf(b)));
+      }
+
+      expectLess('WorldCup Final', 'WorldCup Semi-finals');
+      expectLess('WorldCup Semi-finals', 'WorldCup Groups');
+      expectLess('ChampionsLeague Final', 'WorldCup Groups');
+      expectLess('ChampionsLeague Final', 'ChampionsLeague Semi-finals');
     });
   });
 
