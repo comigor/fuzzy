@@ -339,6 +339,29 @@ void main() {
     });
   });
 
+  group('Search with tokenize includes token average on result score', () {
+    Fuzzy fuse;
+    setUp(() {
+      final customList = ['Apple and Orange Juice'];
+      fuse = setup(
+        itemList: customList,
+        overwriteOptions: FuzzyOptions(threshold: 0.1, tokenize: true),
+      );
+    });
+
+    test('When searching for the term "Apple Juice"', () {
+      final result = fuse.search('Apple Juice');
+
+      // By using a lower threshold, we guarantee that the full text score
+      // ("apple juice" on "Apple and Orange Juice") returns a score of 1.0,
+      // while the token searches return 0.0 (perfect matches) for "Apple" and
+      // "Juice". Thus, the token score average is 0.0, and the result score
+      // should be (1.0 + 0.0) / 2 = 0.5
+      expect(result.length, 1);
+      expect(result[0].score, 0.5);
+    });
+  });
+
   group('Searching with default options', () {
     Fuzzy fuse;
     setUp(() {

@@ -153,7 +153,7 @@ class Fuzzy<T> {
     }
 
     var exists = false;
-    var averageScore = -1;
+    var averageScore = -1.0;
     var numTextMatches = 0;
 
     final mainSearchResult = fullSearcher.search(value.toString());
@@ -190,8 +190,8 @@ class Fuzzy<T> {
         }
       }
 
-      final averageScore =
-          scores.fold(0, (memo, score) => memo + score) / scores.length;
+      averageScore =
+          scores.fold<double>(0, (memo, score) => memo + score) / scores.length;
 
       _log('Token score average: $averageScore');
     }
