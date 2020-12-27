@@ -9,7 +9,7 @@ class WeightedKey<T> {
     @required this.name,
     @required this.getter,
     @required this.weight,
-  });
+  }) : assert(weight > 0, 'Weight should be positive and non-zero');
 
   /// Name of this getter
   final String name;
@@ -135,13 +135,6 @@ class FuzzyOptions<T> {
   static List<WeightedKey<T>> _normalizeWeights<T>(List<WeightedKey<T>> keys) {
     if (keys.isEmpty) {
       return [];
-    }
-
-    for (var key in keys) {
-      if (key.weight <= 0) {
-        throw ArgumentError('WeightedKey weights should be positive, but '
-            'key ${key.name} has weight ${key.weight}');
-      }
     }
 
     var weightSum = keys

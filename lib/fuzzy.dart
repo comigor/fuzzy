@@ -255,29 +255,40 @@ class Fuzzy<T> {
   void _computeScore(Map<String, double> weights, List<Result<T>> results) {
     _log('\n\nComputing score:\n');
 
+    if (weights.length <= 1) {
+      _computeScoreNoWeights(results);
+    } else {
+      _computeScoreWithWeights(weights, results);
+    }
+  }
+
+  void _computeScoreNoWeights(List<Result<T>> results) {
     for (var i = 0, len = results.length; i < len; i += 1) {
       final matches = results[i].matches;
-      final scoreLen = matches.length;
+      var bestScore = matches.map((m) => m.score).fold<double>(
+          1.0, (previousValue, element) => min(previousValue, element));
+      results[i].score = bestScore;
+    }
+  }
 
+  void _computeScoreWithWeights(
+      Map<String, double> weights, List<Result<T>> results) {
+    for (var i = 0, len = results.length; i < len; i += 1) {
       var currScore = 1.0;
-      var bestScore = 1.0;
 
-      for (var j = 0; j < scoreLen; j += 1) {
-        final weight = weights[matches[j].key] ?? 1.0;
-        final score = weight == 1.0
-            ? matches[j].score
-            : (matches[j].score == 0.0 ? 0.001 : matches[j].score);
+      for (var match in results[i].matches) {
+        var weight = weights[match.key];
+        assert(weight != null);
+
+        // We don't use 0 so that the weight differences don't get zeroed out
+        final score = match.score == 0.0 ? 0.001 : match.score;
         final nScore = score * weight;
 
-        if (weight == 1) {
-          bestScore = min(bestScore, nScore);
-        } else {
-          matches[j].nScore = nScore;
-          currScore *= nScore;
-        }
+        match.nScore = nScore;
+        currScore *= nScore;
       }
 
-      results[i].score = bestScore == 1.0 ? currScore : bestScore;
+      results[i].score = currScore;
     }
   }
 

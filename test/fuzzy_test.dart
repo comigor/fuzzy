@@ -310,19 +310,43 @@ void main() {
     });
   });
 
-  group('FuzzyOptions normalizes the keys weights', () {
-    test('Checks that the initial weights are positive', () {
-      expect(
-          () => FuzzyOptions(keys: [
-                WeightedKey(name: 'name', getter: (i) => i, weight: 0),
-              ]),
-          throwsArgumentError);
+  group('Weighted search with a single key equals non-weighted search', () {
+    String gameDescription(Game g) => '${g.tournament} ${g.stage}';
 
-      expect(
-          () => FuzzyOptions(keys: [
-                WeightedKey(name: 'name', getter: (i) => i, weight: -1),
-              ]),
-          throwsArgumentError);
+    test('When searching for "WorldCup semi-final"', () {
+      Fuzzy fuseNoKeys = Fuzzy(
+        customGameList.map((g) => gameDescription(g)).toList(),
+        options: FuzzyOptions(),
+      );
+      Fuzzy fuseSingleKey = Fuzzy<Game>(
+        customGameList,
+        options: FuzzyOptions(
+          keys: [
+            WeightedKey(
+                name: 'desc', getter: (g) => gameDescription(g), weight: 1),
+          ],
+        ),
+      );
+      final resultNoKeys = fuseNoKeys.search('WorldCup semi-final');
+      final resultSingleKey = fuseSingleKey.search('WorldCup semi-final');
+
+      // Check for equality using 'toString()', otherwise it checks for
+      // identity equality (i.e. same objects instead of same contents)
+      expect(resultNoKeys.toString(), equals(resultSingleKey.toString()));
+
+      expect(resultNoKeys[0].item, 'WorldCup Semi-finals');
+      expect(resultNoKeys[0].score, lessThan(resultNoKeys[1].score));
+    });
+  });
+
+  group('FuzzyOptions normalizes the keys weights', () {
+    test("WeightedKey doesn't allow creating a non-positive weight", () {
+      expect(() => WeightedKey(name: 'name', getter: (i) => i, weight: -1),
+          throwsA(isA<AssertionError>()));
+      expect(() => WeightedKey(name: 'name', getter: (i) => i, weight: 0),
+          throwsA(isA<AssertionError>()));
+      expect(() => WeightedKey(name: 'name', getter: (i) => i, weight: 1),
+          returnsNormally);
     });
 
     test('Normalizes weights', () {
