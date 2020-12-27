@@ -12,6 +12,7 @@ final defaultOptions = FuzzyOptions(
   maxPatternLength: 32,
   isCaseSensitive: false,
   tokenSeparator: RegExp(r' +'),
+  minTokenCharLength: 1,
   findAllMatches: false,
   minMatchCharLength: 1,
   shouldSort: true,
@@ -520,6 +521,45 @@ void main() {
           reason: 'and the first index is a single character');
       expect(result[0].matches[0].matchedIndices[0].end, equals(0),
           reason: 'and the first index is a single character');
+    });
+  });
+
+  group('Searching with minTokenCharLength', () {
+    Fuzzy setUp({int minTokenCharLength}) => setup(
+          itemList: customBookList,
+          overwriteOptions: FuzzyOptions(
+            threshold: 0.3,
+            tokenize: true,
+            minTokenCharLength: minTokenCharLength,
+            keys: [
+              WeightedKey(getter: (i) => i.title, weight: 0.5, name: 'title'),
+              WeightedKey(getter: (i) => i.author, weight: 0.5, name: 'author'),
+            ],
+          ),
+        );
+
+    test('When searching for "Plants x Zombies" with min = 1', () {
+      final fuse = setUp(minTokenCharLength: 1);
+      final result = fuse.search('Plants x Zombies');
+
+      expect(result.length, 1, reason: 'We get a match with 1 item');
+      expect(result.single.item.author, 'John X',
+          reason: 'Due to the X on John X');
+    });
+
+    test('When searching for "Plants x Zombies" with min = 2', () {
+      final fuse = setUp(minTokenCharLength: 2);
+      final result = fuse.search('Plants x Zombies');
+
+      expect(result.length, 0, reason: 'We get no matches');
+    });
+
+    test('When searching for a pattern smaller than the length', () {
+      final fuse = setUp(minTokenCharLength: 100);
+      final result = fuse.search('John');
+
+      expect(result.length, 3,
+          reason: 'We still get matches because of full text search');
     });
   });
 

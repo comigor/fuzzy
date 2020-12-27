@@ -39,6 +39,7 @@ class FuzzyOptions<T> {
     this.maxPatternLength = 32,
     this.isCaseSensitive = false,
     Pattern tokenSeparator,
+    this.minTokenCharLength = 1,
     this.findAllMatches = false,
     this.minMatchCharLength = 1,
     List<WeightedKey<T>> keys = const [],
@@ -75,6 +76,9 @@ class FuzzyOptions<T> {
 
   /// Regex used to separate words when searching. Only applicable when `tokenize` is `true`.
   final Pattern tokenSeparator;
+
+  /// Ignore tokens with length smaller than this. Only applicable when `tokenize` is `true`.
+  final int minTokenCharLength;
 
   /// When true, the algorithm continues searching to the end of the input even if a perfect
   /// match is found before the end of the same input.
@@ -116,6 +120,7 @@ class FuzzyOptions<T> {
         maxPatternLength: options?.maxPatternLength ?? maxPatternLength,
         isCaseSensitive: options?.isCaseSensitive ?? isCaseSensitive,
         tokenSeparator: options?.tokenSeparator ?? tokenSeparator,
+        minTokenCharLength: options?.minTokenCharLength ?? minTokenCharLength,
         findAllMatches: options?.findAllMatches ?? findAllMatches,
         minMatchCharLength: options?.minMatchCharLength ?? minMatchCharLength,
         keys: options?.keys ?? keys,

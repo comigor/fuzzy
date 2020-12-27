@@ -68,7 +68,8 @@ class Fuzzy<T> {
     if (options.tokenize) {
       // Tokenize on the separator
       final tokens = pattern.split(options.tokenSeparator)
-        ..removeWhere((token) => token.isEmpty);
+        ..removeWhere((token) => token.isEmpty)
+        ..removeWhere((token) => token.length < options.minTokenCharLength);
       for (var i = 0, len = tokens.length; i < len; i += 1) {
         tokenSearchers.add(Bitap(tokens[i], options: options));
       }
