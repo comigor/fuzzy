@@ -1,5 +1,5 @@
 name: fuzzy
-version: 0.2.5
+version: 0.3.0
 
 description: >
   Fuzzy search in Dart. initially translated from Fuse.js.
