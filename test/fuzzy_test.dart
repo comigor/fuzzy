@@ -231,7 +231,7 @@ void main() {
   });
 
   group('Weighted search considers all keys in score', () {
-    Fuzzy<Game> getFuzzy({double tournamentWeight, stageWeight}) {
+    Fuzzy<Game> getFuzzy({double tournamentWeight, double stageWeight}) {
       return Fuzzy<Game>(
         customGameList,
         options: FuzzyOptions(
@@ -314,7 +314,7 @@ void main() {
     String gameDescription(Game g) => '${g.tournament} ${g.stage}';
 
     test('When searching for "WorldCup semi-final"', () {
-      Fuzzy fuseNoKeys = Fuzzy(
+      final fuseNoKeys = Fuzzy(
         customGameList.map((g) => gameDescription(g)).toList(),
         options: FuzzyOptions(),
       );
@@ -341,19 +341,22 @@ void main() {
 
   group('FuzzyOptions normalizes the keys weights', () {
     test("WeightedKey doesn't allow creating a non-positive weight", () {
-      expect(() => WeightedKey(name: 'name', getter: (i) => i, weight: -1),
+      expect(
+          () => WeightedKey<String>(name: 'name', getter: (i) => i, weight: -1),
           throwsA(isA<AssertionError>()));
-      expect(() => WeightedKey(name: 'name', getter: (i) => i, weight: 0),
+      expect(
+          () => WeightedKey<String>(name: 'name', getter: (i) => i, weight: 0),
           throwsA(isA<AssertionError>()));
-      expect(() => WeightedKey(name: 'name', getter: (i) => i, weight: 1),
+      expect(
+          () => WeightedKey<String>(name: 'name', getter: (i) => i, weight: 1),
           returnsNormally);
     });
 
     test('Normalizes weights', () {
       var options = FuzzyOptions(keys: [
-        WeightedKey(name: 'name1', getter: (i) => i, weight: 0.5),
-        WeightedKey(name: 'name2', getter: (i) => i, weight: 0.5),
-        WeightedKey(name: 'name3', getter: (i) => i, weight: 3),
+        WeightedKey<String>(name: 'name1', getter: (i) => i, weight: 0.5),
+        WeightedKey<String>(name: 'name2', getter: (i) => i, weight: 0.5),
+        WeightedKey<String>(name: 'name3', getter: (i) => i, weight: 3),
       ]);
 
       expect(options.keys[0].weight, 0.125);
@@ -549,8 +552,10 @@ void main() {
             tokenize: true,
             minTokenCharLength: minTokenCharLength,
             keys: [
-              WeightedKey(getter: (i) => i.title, weight: 0.5, name: 'title'),
-              WeightedKey(getter: (i) => i.author, weight: 0.5, name: 'author'),
+              WeightedKey<Book>(
+                  getter: (i) => i.title, weight: 0.5, name: 'title'),
+              WeightedKey<Book>(
+                  getter: (i) => i.author, weight: 0.5, name: 'author'),
             ],
           ),
         );
