@@ -1,7 +1,10 @@
 # CHANGELOG
 
-## 0.2.4
+## 0.2.5
 - Fix bug for search that started or ended with whitespace when tokenize option is true
+
+## 0.2.4
+- Bump dependencies, fix CI
 
 ## 0.2.3
 - Fix some corner case bugs (empty search pattern, missing arguments)

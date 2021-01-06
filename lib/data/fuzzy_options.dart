@@ -23,6 +23,7 @@ class WeightedKey<T> {
   final double weight;
 }
 
+/// Sorter function
 typedef SorterFn<T> = int Function(Result<T> a, Result<T> b);
 
 int _defaultSortFn<T>(Result<T> a, Result<T> b) => a.score.compareTo(b.score);
