@@ -289,13 +289,6 @@ void main() {
       expect(result[0].matches[0].matchedIndices[0].end, equals(0),
           reason: 'and the first index is a single character');
     });
-
-    test(
-        'When the seach pattern is longer than maxPatternLength and contains RegExp special characters',
-        () {
-      final result = fuse.search(
-          r'searching with a sufficiently long string sprinkled with ([ )] *+^$ etc.');
-    }, skip: true);
   });
 
   group('Searching with findAllMatches', () {
@@ -356,10 +349,6 @@ void main() {
           reason: 'We get a result with no matches');
     });
   });
-
-  group('Sorted search results', () {
-    Fuzzy fuse;
-  }, skip: true);
 
   group('Searching using string large strings', () {
     Fuzzy fuse;

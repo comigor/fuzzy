@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.2.4
+- Bump dependencies, fix CI
+
 ## 0.2.3
 - Fix some corner case bugs (empty search pattern, missing arguments)
 
