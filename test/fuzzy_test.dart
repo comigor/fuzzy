@@ -32,6 +32,16 @@ Fuzzy setup({
   );
 }
 
+Fuzzy<T> setupGeneric<T>({
+  List<T> itemList,
+  FuzzyOptions<T> options,
+}) {
+  return Fuzzy<T>(
+    itemList,
+    options: options,
+  );
+}
+
 void main() {
   group('Empty list of strings', () {
     Fuzzy fuse;
@@ -545,17 +555,15 @@ void main() {
   });
 
   group('Searching with minTokenCharLength', () {
-    Fuzzy setUp({int minTokenCharLength}) => setup(
+    Fuzzy<Book> setUp({int minTokenCharLength}) => setupGeneric<Book>(
           itemList: customBookList,
-          overwriteOptions: FuzzyOptions(
+          options: FuzzyOptions(
             threshold: 0.3,
             tokenize: true,
             minTokenCharLength: minTokenCharLength,
             keys: [
-              WeightedKey<Book>(
-                  getter: (i) => i.title, weight: 0.5, name: 'title'),
-              WeightedKey<Book>(
-                  getter: (i) => i.author, weight: 0.5, name: 'author'),
+              WeightedKey(getter: (i) => i.title, weight: 0.5, name: 'title'),
+              WeightedKey(getter: (i) => i.author, weight: 0.5, name: 'author'),
             ],
           ),
         );
