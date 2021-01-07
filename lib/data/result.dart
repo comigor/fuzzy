@@ -81,7 +81,8 @@ class ResultDetails<T> {
   /// Score of this result
   final double score;
 
-  /// nScore of this result (?)
+  /// nScore of this result. It's the weighted score of the match, when it's
+  /// a weighted search (i.e. uses WeightedKeys).
   double nScore;
 
   /// Indexes of matched patterns on the value

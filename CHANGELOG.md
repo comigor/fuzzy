@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 0.3.0
+- Improve search results on weighted search to combine scores from all keys
+- Improve search results on single-keyed search, making it consistent with non-weighted search
+- Add parameter to ignore tokens smaller than a certain length when searching
+- Add normalization of WeightedKey weights
+- Fix bug where results returned from search all had arrayIndex = -1
+- Fix bug where the token scores didn't count towards the result score
+
+## 0.2.5
+- Fix bug for search that started or ended with whitespace when tokenize option is true
+
 ## 0.2.4
 - Bump dependencies, fix CI
 

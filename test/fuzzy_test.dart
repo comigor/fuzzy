@@ -2,6 +2,7 @@ import 'package:fuzzy/fuzzy.dart';
 import 'package:test/test.dart';
 
 import 'fixtures/books.dart';
+import 'fixtures/games.dart';
 
 final defaultList = ['Apple', 'Orange', 'Banana'];
 final defaultOptions = FuzzyOptions(
@@ -11,6 +12,7 @@ final defaultOptions = FuzzyOptions(
   maxPatternLength: 32,
   isCaseSensitive: false,
   tokenSeparator: RegExp(r' +'),
+  minTokenCharLength: 1,
   findAllMatches: false,
   minMatchCharLength: 1,
   shouldSort: true,
@@ -27,6 +29,16 @@ Fuzzy setup({
   return Fuzzy(
     itemList ?? defaultList,
     options: defaultOptions.mergeWith(overwriteOptions),
+  );
+}
+
+Fuzzy<T> setupGeneric<T>({
+  List<T> itemList,
+  FuzzyOptions<T> options,
+}) {
+  return Fuzzy<T>(
+    itemList,
+    options: options,
   );
 }
 
@@ -50,7 +62,6 @@ void main() {
     });
     test('empty result is returned', () {
       final result = fuse.search('Bla');
-      print(result);
       expect(result.isEmpty, true);
     });
   });
@@ -125,6 +136,25 @@ void main() {
 
       expect(result[1].item, equals('Banana'));
       expect(result[1].score, isNot(0), reason: 'score is not zero');
+    });
+  });
+
+  group('Include arrayIndex in result list', () {
+    Fuzzy fuse;
+    setUp(() {
+      fuse = setup();
+    });
+
+    test('When performing a fuzzy search for the term "ran"', () {
+      final result = fuse.search('ran');
+
+      expect(result.length, 2, reason: 'we get a list of containing 2 items');
+
+      expect(result[0].item, equals('Orange'));
+      expect(result[0].matches.single.arrayIndex, 1);
+
+      expect(result[1].item, equals('Banana'));
+      expect(result[1].matches.single.arrayIndex, 2);
     });
   });
 
@@ -210,6 +240,141 @@ void main() {
     });
   });
 
+  group('Weighted search considers all keys in score', () {
+    Fuzzy<Game> getFuzzy({double tournamentWeight, double stageWeight}) {
+      return Fuzzy<Game>(
+        customGameList,
+        options: FuzzyOptions(
+          keys: [
+            WeightedKey(
+                getter: (i) => i.tournament,
+                weight: tournamentWeight,
+                name: 'tournament'),
+            WeightedKey(
+                getter: (i) => i.stage, weight: stageWeight, name: 'stage'),
+          ],
+          tokenize: true,
+        ),
+      );
+    }
+
+    test('When searching for "WorldCup Final", where weights are equal', () {
+      final fuse = getFuzzy(
+        tournamentWeight: 0.5,
+        stageWeight: 0.5,
+      );
+      final result = fuse.search('WorldCup Final');
+
+      void expectLess(String a, String b) {
+        double scoreOf(String s) =>
+            result.singleWhere((e) => e.item.toString() == s).score;
+        expect(scoreOf(a), lessThan(scoreOf(b)));
+      }
+
+      expectLess('WorldCup Final', 'WorldCup Semi-finals');
+      expectLess('WorldCup Semi-finals', 'WorldCup Groups');
+      expectLess('WorldCup Groups', 'ChampionsLeague Final');
+      expectLess('ChampionsLeague Final', 'ChampionsLeague Semi-finals');
+    });
+
+    test(
+        'When searching for "WorldCup Final", where the tournament is weighted higher',
+        () {
+      final fuse = getFuzzy(
+        tournamentWeight: 0.8,
+        stageWeight: 0.2,
+      );
+      final result = fuse.search('WorldCup Final');
+
+      void expectLess(String a, String b) {
+        double scoreOf(String s) =>
+            result.singleWhere((e) => e.item.toString() == s).score;
+        expect(scoreOf(a), lessThan(scoreOf(b)));
+      }
+
+      expectLess('WorldCup Final', 'WorldCup Semi-finals');
+      expectLess('WorldCup Semi-finals', 'WorldCup Groups');
+      expectLess('WorldCup Groups', 'ChampionsLeague Final');
+      expectLess('ChampionsLeague Final', 'ChampionsLeague Semi-finals');
+    });
+
+    test(
+        'When searching for "WorldCup Final", where the stage is weighted higher',
+        () {
+      final fuse = getFuzzy(
+        tournamentWeight: 0.2,
+        stageWeight: 0.8,
+      );
+      final result = fuse.search('WorldCup Final');
+
+      void expectLess(String a, String b) {
+        double scoreOf(String s) =>
+            result.singleWhere((e) => e.item.toString() == s).score;
+        expect(scoreOf(a), lessThan(scoreOf(b)));
+      }
+
+      expectLess('WorldCup Final', 'WorldCup Semi-finals');
+      expectLess('WorldCup Semi-finals', 'WorldCup Groups');
+      expectLess('ChampionsLeague Final', 'WorldCup Groups');
+      expectLess('ChampionsLeague Final', 'ChampionsLeague Semi-finals');
+    });
+  });
+
+  group('Weighted search with a single key equals non-weighted search', () {
+    String gameDescription(Game g) => '${g.tournament} ${g.stage}';
+
+    test('When searching for "WorldCup semi-final"', () {
+      final fuseNoKeys = Fuzzy(
+        customGameList.map((g) => gameDescription(g)).toList(),
+        options: FuzzyOptions(),
+      );
+      Fuzzy fuseSingleKey = Fuzzy<Game>(
+        customGameList,
+        options: FuzzyOptions(
+          keys: [
+            WeightedKey(
+                name: 'desc', getter: (g) => gameDescription(g), weight: 1),
+          ],
+        ),
+      );
+      final resultNoKeys = fuseNoKeys.search('WorldCup semi-final');
+      final resultSingleKey = fuseSingleKey.search('WorldCup semi-final');
+
+      // Check for equality using 'toString()', otherwise it checks for
+      // identity equality (i.e. same objects instead of same contents)
+      expect(resultNoKeys.toString(), equals(resultSingleKey.toString()));
+
+      expect(resultNoKeys[0].item, 'WorldCup Semi-finals');
+      expect(resultNoKeys[0].score, lessThan(resultNoKeys[1].score));
+    });
+  });
+
+  group('FuzzyOptions normalizes the keys weights', () {
+    test("WeightedKey doesn't allow creating a non-positive weight", () {
+      expect(
+          () => WeightedKey<String>(name: 'name', getter: (i) => i, weight: -1),
+          throwsA(isA<AssertionError>()));
+      expect(
+          () => WeightedKey<String>(name: 'name', getter: (i) => i, weight: 0),
+          throwsA(isA<AssertionError>()));
+      expect(
+          () => WeightedKey<String>(name: 'name', getter: (i) => i, weight: 1),
+          returnsNormally);
+    });
+
+    test('Normalizes weights', () {
+      var options = FuzzyOptions(keys: [
+        WeightedKey<String>(name: 'name1', getter: (i) => i, weight: 0.5),
+        WeightedKey<String>(name: 'name2', getter: (i) => i, weight: 0.5),
+        WeightedKey<String>(name: 'name3', getter: (i) => i, weight: 3),
+      ]);
+
+      expect(options.keys[0].weight, 0.125);
+      expect(options.keys[1].weight, 0.125);
+      expect(options.keys[2].weight, 0.75);
+    });
+  });
+
   group(
       'Search with match all tokens in a list of strings with leading and trailing whitespace',
       () {
@@ -229,6 +394,56 @@ void main() {
       expect(result[0].item, equals(' Banana '),
           reason:
               'whose value is the same, disconsidering leading and trailing whitespace');
+    });
+  });
+
+  group(
+      'Search with tokenize where the search pattern starts or ends with the tokenSeparator',
+      () {
+    group('With the default tokenSeparator, which is white space', () {
+      Fuzzy fuse;
+      setUp(() {
+        fuse = setup(overwriteOptions: FuzzyOptions(tokenize: true));
+      });
+
+      test('When the search pattern starts with white space', () {
+        final result = fuse.search(' Apple');
+
+        expect(result.length, 1, reason: 'we get a list of exactly 1 item');
+        expect(result[0].item, equals('Apple'));
+      });
+
+      test('When the search pattern ends with white space', () {
+        final result = fuse.search('Apple ');
+
+        expect(result.length, 1, reason: 'we get a list of exactly 1 item');
+        expect(result[0].item, equals('Apple'));
+      });
+
+      test('When the search pattern contains white space in the middle', () {
+        final result = fuse.search('Apple Orange');
+
+        expect(result.length, 2, reason: 'we get a list of exactly 2 itens');
+        expect(result[0].item, equals('Orange'));
+        expect(result[1].item, equals('Apple'));
+      });
+    });
+
+    group('With a custom tokenSeparator', () {
+      Fuzzy fuse;
+      setUp(() {
+        fuse = setup(
+            overwriteOptions:
+                FuzzyOptions(tokenize: true, tokenSeparator: RegExp(';')));
+      });
+
+      test('When the search pattern ends with a tokenSeparator match', () {
+        final result = fuse.search('Apple;Orange;');
+
+        expect(result.length, 2, reason: 'we get a list of exactly 2 itens');
+        expect(result[0].item, equals('Orange'));
+        expect(result[1].item, equals('Apple'));
+      });
     });
   });
 
@@ -268,6 +483,29 @@ void main() {
       expect(result[1].item, equals('AustralianSuper - Corporate Division'));
       expect(result[2].item, equals('Aon Master Trust - Corporate Super'));
       expect(result[3].item, equals('Workforce Superannuation Corporate'));
+    });
+  });
+
+  group('Search with tokenize includes token average on result score', () {
+    Fuzzy fuse;
+    setUp(() {
+      final customList = ['Apple and Orange Juice'];
+      fuse = setup(
+        itemList: customList,
+        overwriteOptions: FuzzyOptions(threshold: 0.1, tokenize: true),
+      );
+    });
+
+    test('When searching for the term "Apple Juice"', () {
+      final result = fuse.search('Apple Juice');
+
+      // By using a lower threshold, we guarantee that the full text score
+      // ("apple juice" on "Apple and Orange Juice") returns a score of 1.0,
+      // while the token searches return 0.0 (perfect matches) for "Apple" and
+      // "Juice". Thus, the token score average is 0.0, and the result score
+      // should be (1.0 + 0.0) / 2 = 0.5
+      expect(result.length, 1);
+      expect(result[0].score, 0.5);
     });
   });
 
@@ -313,6 +551,45 @@ void main() {
           reason: 'and the first index is a single character');
       expect(result[0].matches[0].matchedIndices[0].end, equals(0),
           reason: 'and the first index is a single character');
+    });
+  });
+
+  group('Searching with minTokenCharLength', () {
+    Fuzzy<Book> setUp({int minTokenCharLength}) => setupGeneric<Book>(
+          itemList: customBookList,
+          options: FuzzyOptions(
+            threshold: 0.3,
+            tokenize: true,
+            minTokenCharLength: minTokenCharLength,
+            keys: [
+              WeightedKey(getter: (i) => i.title, weight: 0.5, name: 'title'),
+              WeightedKey(getter: (i) => i.author, weight: 0.5, name: 'author'),
+            ],
+          ),
+        );
+
+    test('When searching for "Plants x Zombies" with min = 1', () {
+      final fuse = setUp(minTokenCharLength: 1);
+      final result = fuse.search('Plants x Zombies');
+
+      expect(result.length, 1, reason: 'We get a match with 1 item');
+      expect(result.single.item.author, 'John X',
+          reason: 'Due to the X on John X');
+    });
+
+    test('When searching for "Plants x Zombies" with min = 2', () {
+      final fuse = setUp(minTokenCharLength: 2);
+      final result = fuse.search('Plants x Zombies');
+
+      expect(result.length, 0, reason: 'We get no matches');
+    });
+
+    test('When searching for a pattern smaller than the length', () {
+      final fuse = setUp(minTokenCharLength: 100);
+      final result = fuse.search('John');
+
+      expect(result.length, 3,
+          reason: 'We still get matches because of full text search');
     });
   });
 
