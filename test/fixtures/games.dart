@@ -1,5 +1,8 @@
 class Game {
-  Game({this.tournament, this.stage});
+  Game({
+    required this.tournament,
+    required this.stage,
+  });
 
   final String tournament;
   final String stage;

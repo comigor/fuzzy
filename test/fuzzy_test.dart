@@ -5,7 +5,7 @@ import 'fixtures/books.dart';
 import 'fixtures/games.dart';
 
 final defaultList = ['Apple', 'Orange', 'Banana'];
-final defaultOptions = FuzzyOptions(
+final defaultOptions = FuzzyOptions<String>(
   location: 0,
   distance: 100,
   threshold: 0.6,
@@ -22,19 +22,19 @@ final defaultOptions = FuzzyOptions(
   verbose: false,
 );
 
-Fuzzy setup({
-  List itemList,
-  FuzzyOptions overwriteOptions,
+Fuzzy<String> setup({
+  List<String>? itemList,
+  FuzzyOptions<String>? options,
 }) {
-  return Fuzzy(
+  return Fuzzy<String>(
     itemList ?? defaultList,
-    options: defaultOptions.mergeWith(overwriteOptions),
+    options: options ?? defaultOptions,
   );
 }
 
 Fuzzy<T> setupGeneric<T>({
-  List<T> itemList,
-  FuzzyOptions<T> options,
+  required List<T> itemList,
+  required FuzzyOptions<T> options,
 }) {
   return Fuzzy<T>(
     itemList,
@@ -44,7 +44,7 @@ Fuzzy<T> setupGeneric<T>({
 
 void main() {
   group('Empty list of strings', () {
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       fuse = setup(itemList: <String>[]);
     });
@@ -55,8 +55,8 @@ void main() {
   });
 
   group('Null list', () {
-    Fuzzy fuse;
-    List<String> items;
+    late Fuzzy fuse;
+    List<String>? items;
     setUp(() {
       fuse = Fuzzy(items, options: defaultOptions);
     });
@@ -67,7 +67,7 @@ void main() {
   });
 
   group('Flat list of strings: ["Apple", "Orange", "Banana"]', () {
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       fuse = setup();
     });
@@ -82,7 +82,7 @@ void main() {
   });
 
   group('Flat list of strings: ["Apple", "Orange", "Banana"]', () {
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       fuse = setup();
     });
@@ -110,7 +110,7 @@ void main() {
   });
 
   group('Include score in result list: ["Apple", "Orange", "Banana"]', () {
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       fuse = setup();
     });
@@ -140,10 +140,7 @@ void main() {
   });
 
   group('Include arrayIndex in result list', () {
-    Fuzzy fuse;
-    setUp(() {
-      fuse = setup();
-    });
+    final fuse = setup();
 
     test('When performing a fuzzy search for the term "ran"', () {
       final result = fuse.search('ran');
@@ -241,7 +238,10 @@ void main() {
   });
 
   group('Weighted search considers all keys in score', () {
-    Fuzzy<Game> getFuzzy({double tournamentWeight, double stageWeight}) {
+    Fuzzy<Game> getFuzzy({
+      required double tournamentWeight,
+      required double stageWeight,
+    }) {
       return Fuzzy<Game>(
         customGameList,
         options: FuzzyOptions(
@@ -268,7 +268,7 @@ void main() {
       void expectLess(String a, String b) {
         double scoreOf(String s) =>
             result.singleWhere((e) => e.item.toString() == s).score;
-        expect(scoreOf(a), lessThan(scoreOf(b)));
+        expect(scoreOf(a), lessThanOrEqualTo(scoreOf(b)));
       }
 
       expectLess('WorldCup Final', 'WorldCup Semi-finals');
@@ -289,7 +289,7 @@ void main() {
       void expectLess(String a, String b) {
         double scoreOf(String s) =>
             result.singleWhere((e) => e.item.toString() == s).score;
-        expect(scoreOf(a), lessThan(scoreOf(b)));
+        expect(scoreOf(a), lessThanOrEqualTo(scoreOf(b)));
       }
 
       expectLess('WorldCup Final', 'WorldCup Semi-finals');
@@ -310,7 +310,7 @@ void main() {
       void expectLess(String a, String b) {
         double scoreOf(String s) =>
             result.singleWhere((e) => e.item.toString() == s).score;
-        expect(scoreOf(a), lessThan(scoreOf(b)));
+        expect(scoreOf(a), lessThanOrEqualTo(scoreOf(b)));
       }
 
       expectLess('WorldCup Final', 'WorldCup Semi-finals');
@@ -378,12 +378,12 @@ void main() {
   group(
       'Search with match all tokens in a list of strings with leading and trailing whitespace',
       () {
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       final customList = [' Apple', 'Orange ', ' Banana '];
       fuse = setup(
         itemList: customList,
-        overwriteOptions: FuzzyOptions(tokenize: true),
+        options: defaultOptions.copyWith(tokenize: true),
       );
     });
 
@@ -401,10 +401,7 @@ void main() {
       'Search with tokenize where the search pattern starts or ends with the tokenSeparator',
       () {
     group('With the default tokenSeparator, which is white space', () {
-      Fuzzy fuse;
-      setUp(() {
-        fuse = setup(overwriteOptions: FuzzyOptions(tokenize: true));
-      });
+      final fuse = setup(options: FuzzyOptions(tokenize: true));
 
       test('When the search pattern starts with white space', () {
         final result = fuse.search(' Apple');
@@ -430,12 +427,8 @@ void main() {
     });
 
     group('With a custom tokenSeparator', () {
-      Fuzzy fuse;
-      setUp(() {
-        fuse = setup(
-            overwriteOptions:
-                FuzzyOptions(tokenize: true, tokenSeparator: RegExp(';')));
-      });
+      final fuse = setup(
+          options: FuzzyOptions(tokenize: true, tokenSeparator: RegExp(';')));
 
       test('When the search pattern ends with a tokenSeparator match', () {
         final result = fuse.search('Apple;Orange;');
@@ -448,7 +441,7 @@ void main() {
   });
 
   group('Search with match all tokens', () {
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       final customList = [
         'AustralianSuper - Corporate Division',
@@ -459,7 +452,7 @@ void main() {
       ];
       fuse = setup(
         itemList: customList,
-        overwriteOptions: FuzzyOptions(tokenize: true),
+        options: defaultOptions.copyWith(tokenize: true),
       );
     });
 
@@ -487,14 +480,26 @@ void main() {
   });
 
   group('Search with tokenize includes token average on result score', () {
-    Fuzzy fuse;
-    setUp(() {
-      final customList = ['Apple and Orange Juice'];
-      fuse = setup(
-        itemList: customList,
-        overwriteOptions: FuzzyOptions(threshold: 0.1, tokenize: true),
-      );
-    });
+    final customList = ['Apple and Orange Juice'];
+    final fuse = setup(
+      itemList: customList,
+      options: FuzzyOptions(
+        threshold: 0.1,
+        tokenize: true,
+        location: 0,
+        distance: 100,
+        maxPatternLength: 32,
+        isCaseSensitive: false,
+        tokenSeparator: RegExp(r' +'),
+        minTokenCharLength: 1,
+        findAllMatches: false,
+        minMatchCharLength: 1,
+        shouldSort: true,
+        sortFn: (a, b) => a.score.compareTo(b.score),
+        matchAllTokens: false,
+        verbose: false,
+      ),
+    );
 
     test('When searching for the term "Apple Juice"', () {
       final result = fuse.search('Apple Juice');
@@ -510,7 +515,7 @@ void main() {
   });
 
   group('Searching with default options', () {
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       final customList = ['t te tes test tes te t'];
       fuse = setup(itemList: customList);
@@ -530,12 +535,12 @@ void main() {
   });
 
   group('Searching with findAllMatches', () {
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       final customList = ['t te tes test tes te t'];
       fuse = setup(
         itemList: customList,
-        overwriteOptions: FuzzyOptions(
+        options: defaultOptions.copyWith(
           findAllMatches: true,
         ),
       );
@@ -555,7 +560,7 @@ void main() {
   });
 
   group('Searching with minTokenCharLength', () {
-    Fuzzy<Book> setUp({int minTokenCharLength}) => setupGeneric<Book>(
+    Fuzzy<Book> setUp({required int minTokenCharLength}) => setupGeneric<Book>(
           itemList: customBookList,
           options: FuzzyOptions(
             threshold: 0.3,
@@ -594,12 +599,12 @@ void main() {
   });
 
   group('Searching with minCharLength', () {
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       final customList = ['t te tes test tes te t'];
       fuse = setup(
         itemList: customList,
-        overwriteOptions: FuzzyOptions(
+        options: defaultOptions.copyWith(
           minMatchCharLength: 2,
         ),
       );
@@ -628,7 +633,7 @@ void main() {
   });
 
   group('Searching using string large strings', () {
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       final customList = [
         'pizza',
@@ -637,7 +642,7 @@ void main() {
       ];
       fuse = setup(
         itemList: customList,
-        overwriteOptions: FuzzyOptions(
+        options: defaultOptions.copyWith(
           threshold: 0.5,
           location: 0,
           distance: 0,
@@ -682,11 +687,11 @@ void main() {
 
   group('On string normalization', () {
     final diacriticList = ['Ápplé', 'Öřângè', 'Bánànã'];
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       fuse = setup(
         itemList: diacriticList,
-        overwriteOptions: FuzzyOptions(shouldNormalize: true),
+        options: defaultOptions.copyWith(shouldNormalize: true),
       );
     });
 
@@ -702,7 +707,7 @@ void main() {
 
   group('Without string normalization', () {
     final diacriticList = ['Ápplé', 'Öřângè', 'Bánànã'];
-    Fuzzy fuse;
+    late Fuzzy fuse;
     setUp(() {
       fuse = setup(itemList: diacriticList);
     });

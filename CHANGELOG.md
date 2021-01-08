@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.4.0-nullsafety.0
+- Migrate to null safety
+
 ## 0.3.0
 - Improve search results on weighted search to combine scores from all keys
 - Improve search results on single-keyed search, making it consistent with non-weighted search
