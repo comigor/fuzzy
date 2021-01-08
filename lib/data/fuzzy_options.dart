@@ -7,7 +7,7 @@ class WeightedKey<T> {
     required this.name,
     required this.getter,
     required this.weight,
-  }) : assert(weight >= 0 && weight <= 1);
+  }) : assert(weight > 0, 'Weight should be positive and non-zero');
 
   /// Name of this getter
   final String name;
@@ -15,7 +15,9 @@ class WeightedKey<T> {
   /// Getter to a specifc string inside item
   final String Function(T obj) getter;
 
-  /// Weight of this getter
+  /// Weight of this getter. When passing a list of WeightedKey to FuzzyOptions,
+  /// the weight can be any positive number; FuzzyOptions normalizes it on
+  /// construction.
   final double weight;
 }
 
@@ -26,7 +28,9 @@ int _defaultSortFn<T>(Result<T> a, Result<T> b) => a.score.compareTo(b.score);
 
 /// Options for performing a fuzzy search
 class FuzzyOptions<T> {
-  /// Instantiate an options object
+  /// Instantiate an options object.
+  /// The `keys` list requires a positive number (they'll be normalized upon
+  /// instantiation). If any weight is not positive, throws an ArgumentError.
   FuzzyOptions({
     this.location = 0,
     this.distance = 100,
@@ -35,8 +39,9 @@ class FuzzyOptions<T> {
     this.isCaseSensitive = false,
     Pattern? tokenSeparator,
     this.findAllMatches = false,
+    this.minTokenCharLength = 1,
     this.minMatchCharLength = 1,
-    this.keys = const [],
+    List<WeightedKey<T>> keys = const [],
     this.shouldSort = true,
     SorterFn<T>? sortFn,
     this.tokenize = false,
@@ -45,6 +50,7 @@ class FuzzyOptions<T> {
     this.shouldNormalize = false,
   })  : tokenSeparator =
             tokenSeparator ?? RegExp(r' +', caseSensitive: isCaseSensitive),
+        keys = _normalizeWeights(keys),
         sortFn = sortFn ?? _defaultSortFn;
 
   /// Approximately where in the text is the pattern expected to be found?
@@ -69,6 +75,9 @@ class FuzzyOptions<T> {
 
   /// Regex used to separate words when searching. Only applicable when `tokenize` is `true`.
   final Pattern tokenSeparator;
+
+  /// Ignore tokens with length smaller than this. Only applicable when `tokenize` is `true`.
+  final int minTokenCharLength;
 
   /// When true, the algorithm continues searching to the end of the input even if a perfect
   /// match is found before the end of the same input.
@@ -111,6 +120,7 @@ class FuzzyOptions<T> {
     bool? isCaseSensitive,
     Pattern? tokenSeparator,
     bool? findAllMatches,
+    int? minTokenCharLength,
     int? minMatchCharLength,
     List<WeightedKey<T>>? keys,
     bool? shouldSort,
@@ -128,6 +138,7 @@ class FuzzyOptions<T> {
         isCaseSensitive: isCaseSensitive ?? this.isCaseSensitive,
         tokenSeparator: tokenSeparator ?? this.tokenSeparator,
         findAllMatches: findAllMatches ?? this.findAllMatches,
+        minTokenCharLength: minTokenCharLength ?? this.minTokenCharLength,
         minMatchCharLength: minMatchCharLength ?? this.minMatchCharLength,
         keys: keys ?? this.keys,
         shouldSort: shouldSort ?? this.shouldSort,
@@ -137,4 +148,22 @@ class FuzzyOptions<T> {
         verbose: verbose ?? this.verbose,
         shouldNormalize: shouldNormalize ?? this.shouldNormalize,
       );
+
+  static List<WeightedKey<T>> _normalizeWeights<T>(List<WeightedKey<T>> keys) {
+    if (keys.isEmpty) {
+      return [];
+    }
+
+    var weightSum = keys
+        .map((key) => key.weight)
+        .fold<double>(0, (previousValue, element) => previousValue + element);
+
+    return keys
+        .map((key) => WeightedKey<T>(
+              name: key.name,
+              getter: key.getter,
+              weight: key.weight / weightSum,
+            ))
+        .toList();
+  }
 }
