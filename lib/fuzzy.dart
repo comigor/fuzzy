@@ -156,7 +156,7 @@ class Fuzzy<T> {
     var numTextMatches = 0;
 
     final mainSearchResult = fullSearcher.search(value.toString());
-    _log('Full text: "${value}", score: ${mainSearchResult.score}');
+    _log('Full text: "$value", score: ${mainSearchResult.score}');
 
     if (options.tokenize) {
       final words = value.toString().split(options.tokenSeparator);
@@ -181,7 +181,7 @@ class Fuzzy<T> {
               scores.add(1);
             }
           }
-          _log('Token: "${word}", score: ${tokenSearchResult.score}');
+          _log('Token: "$word", score: ${tokenSearchResult.score}');
         }
 
         if (hasMatchInText) {
@@ -206,7 +206,7 @@ class Fuzzy<T> {
         ? numTextMatches >= tokenSearchers.length
         : true;
 
-    _log('\nCheck Matches: ${checkTextMatches}');
+    _log('\nCheck Matches: $checkTextMatches');
 
     // If a match is found, add the item to <rawResults>, including its score
     if ((exists || mainSearchResult.isMatch) && checkTextMatches) {
