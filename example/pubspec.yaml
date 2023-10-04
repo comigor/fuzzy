@@ -1,11 +1,9 @@
 name: fuzzy_example
-version: 0.0.1
+version: 0.0.2
 
-authors:
-  - Igor Borges <igor@borges.dev>
 
 environment:
-  sdk: '>=2.0.0 <3.0.0'
+  sdk: '>=3.0.3 <4.0.0'
 
 publish_to: none
 

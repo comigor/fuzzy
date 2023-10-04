@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.5.0
+- Dart 3 support added.
+
 ## 0.4.1
 - Update the CI
 

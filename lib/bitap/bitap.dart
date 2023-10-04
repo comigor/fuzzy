@@ -1,4 +1,4 @@
-import 'package:latinize/latinize.dart';
+import 'package:stringr/stringr.dart';
 import '../data/fuzzy_options.dart';
 import 'bitap_pattern_alphabet.dart' as pa;
 import 'bitap_search.dart';
@@ -20,7 +20,7 @@ class Bitap {
   Bitap(String pattern, {required FuzzyOptions options}) : options = options {
     this.pattern = options.isCaseSensitive ? pattern : pattern.toLowerCase();
     this.pattern =
-        options.shouldNormalize ? latinize(this.pattern) : this.pattern;
+        options.shouldNormalize ? this.pattern.latinize() : this.pattern;
     if (pattern.length <= options.maxPatternLength) {
       patternAlphabet = pa.patternAlphabet(this.pattern);
     }
@@ -41,7 +41,7 @@ class Bitap {
       text = text.toLowerCase();
     }
     if (options.shouldNormalize) {
-      text = latinize(text);
+      text = text.latinize();
     }
 
     // Exact match
