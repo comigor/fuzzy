@@ -9,23 +9,27 @@ name: CI
 jobs:
   test:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta'
     steps:
-      - name: Clone repository
-        uses: actions/checkout@master
-      - name: Run tests
-        uses: comigor/actions/dart-test@master
-        env:
-          DTA_EXCLUDE_REGEX: example
+      - uses: actions/checkout@v3
+      - uses: dart-lang/setup-dart@v1.3
+        with:
+          sdk: stable
+      - id: install
+        name: Install dependencies
+        run: dart pub get
+      - name: Test
+        if: always() && steps.install.outcome == 'success'
+        run: dart test
   create-tag-and-release:
-    needs: test
+    needs:
+      - test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta'
     steps:
       - uses: actions/checkout@master
       - id: check_version_and_changelog
         name: Check if version on pubspec.yaml was changed and if there's an entry for this new version on CHANGELOG
-        uses: ./.github/actions/check-version-and-changelog
+        uses: comigor/actions/check-version-and-changelog@master
         with:
           base_ref: "${{ github.ref }}"
       - name: Push tag
@@ -46,7 +50,14 @@ jobs:
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/beta'
     steps:
       - uses: actions/checkout@master
+      - uses: dart-lang/setup-dart@v1.3
+        with:
+          sdk: stable
+      - id: install
+        name: Install dependencies
+        run: dart pub get
       - name: Publish to pub.dev
-        uses: comigor/actions/pub-publish@master
-        env:
-          PUB_CREDENTIALS: ${{ secrets.PUB_CREDENTIALS }}
+        run: |
+          mkdir -p ~/.config/dart
+          echo '${{ secrets.PUB_CREDENTIALS }}' > ~/.config/dart/pub-credentials.json
+          dart pub publish --force

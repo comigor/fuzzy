@@ -6,16 +6,21 @@ jobs:
   check-version-and-changelog:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - uses: ./.github/actions/check-version-and-changelog
+      - uses: actions/checkout@v3
+      - uses: comigor/actions/check-version-and-changelog@master
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          base_ref: "${{ github.base_ref }}"
+          repo_token: ${{ github.token }}
+          base_ref: ${{ github.base_ref }}
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - uses: ./.github/actions/dart-test
+      - uses: actions/checkout@v3
+      - uses: dart-lang/setup-dart@v1.3
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          exclude_regex: "example"
+          sdk: stable
+      - id: install
+        name: Install dependencies
+        run: dart pub get
+      - name: Test
+        if: always() && steps.install.outcome == 'success'
+        run: dart test
