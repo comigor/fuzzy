@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.4.1
+- Update the CI
+
 ## 0.4.0-nullsafety.0
 - Migrate to null safety
 
