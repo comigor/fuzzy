@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.5.1
+- Range error when using limit argument to fuse.search, closes #25. [Original PR](https://github.com/comigor/fuzzy/pull/26).
+
 ## 0.5.0
 - Dart 3 support added.
 

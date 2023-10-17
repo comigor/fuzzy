@@ -55,7 +55,7 @@ class Fuzzy<T> {
       _sort(resultsAndWeights.results);
     }
 
-    if (limit > 0) {
+    if (limit > 0 && resultsAndWeights.results.length > limit) {
       return resultsAndWeights.results.sublist(0, limit);
     }
 
