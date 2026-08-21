@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.5.2
+- Fix bug where search patterns containing asterisks (*) or backticks (`) returned no results, closes #31.
+
 ## 0.5.1
 - Range error when using limit argument to fuse.search, closes #25. [Original PR](https://github.com/comigor/fuzzy/pull/26).
 
