@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## Unreleased
+- Escape regex metacharacters before compiling a search pattern. Patterns
+  longer than `maxPatternLength` take the regex path, where an unbalanced `(`,
+  an unterminated `[`, or a trailing `\` previously threw a `FormatException`
+  and other metacharacters were silently interpreted as regex syntax instead of
+  being matched literally. Closes #23.
+
 ## 0.5.1
 - Range error when using limit argument to fuse.search, closes #25. [Original PR](https://github.com/comigor/fuzzy/pull/26).
 

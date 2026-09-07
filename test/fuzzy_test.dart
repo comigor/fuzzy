@@ -718,4 +718,51 @@ void main() {
       expect(result.length, equals(0));
     });
   });
+
+  group('Searching with special characters', () {
+    const pipeInsulation = 'Rohrisolierung 22 mm, Steinwolle (1 m Stange)';
+    const copperPipe = 'Cu-Rohr 22 x 1 mm, Stange 5 m [VPE 10]';
+    const quantifiers = 'super+large+much+unique+36+very+wow+';
+    final specialCharList = [
+      pipeInsulation,
+      copperPipe,
+      quantifiers,
+      'Apple',
+    ];
+    late Fuzzy<String> fuse;
+    setUp(() {
+      fuse = setup(itemList: specialCharList);
+    });
+
+    List<String> itemsFor(String pattern) =>
+        fuse.search(pattern).map((r) => r.item).toList();
+
+    // Every pattern below is longer than maxPatternLength, so it takes the
+    // regex path rather than the bitap one. Before special characters were
+    // escaped, these threw a FormatException.
+    test('an unbalanced parenthesis does not throw', () {
+      expect(itemsFor('Rohrisolierung 22 mm, Steinwolle ('),
+          contains(pipeInsulation));
+    });
+
+    test('an unterminated character class does not throw', () {
+      expect(
+          itemsFor('Cu-Rohr 22 x 1 mm, Stange 5 m [VP'), contains(copperPipe));
+    });
+
+    test('a trailing backslash does not throw', () {
+      expect(() => itemsFor(r'Rohrisolierung 22 mm, Steinwolle \'),
+          returnsNormally);
+    });
+
+    // Single-token patterns, so no alternation is introduced and the whole
+    // pattern has to match literally.
+    test('a trailing quantifier is matched literally', () {
+      expect(itemsFor(quantifiers), equals([quantifiers]));
+    });
+
+    test('a dot does not match an arbitrary character', () {
+      expect(itemsFor('super+large+much+unique+36+very.wow+'), isEmpty);
+    });
+  });
 }
