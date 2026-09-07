@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## Unreleased
+## 0.5.2
 - Escape regex metacharacters before compiling a search pattern. Patterns
   longer than `maxPatternLength` take the regex path, where an unbalanced `(`,
   an unterminated `[`, or a trailing `\` previously threw a `FormatException`
